@@ -1,0 +1,14 @@
+    1  sudo snap install epiphany
+    2  epiphany
+    3  pwd
+    4  ls -a
+    5  cd Desktop/
+    6  cd cs149/
+    7  cd WS1/
+    8  history > cmd.log
+    9  ls -latr
+   10  git add cmd.log *.c
+   11  git commit -m "First Commit" -a
+   12  git branch
+   13  git push -u origin main
+   14  history > cmd.log
