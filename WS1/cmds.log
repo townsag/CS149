@@ -1,0 +1,16 @@
+  347  git config --global user.email townsag@gmail.com
+  348  git config --global user.name townsag
+  349  mkdir WS1
+  350  cd WS1
+  351  git add .
+  352  wget -O out.pdf https://tinyurl.com/yy94jltt
+  353  ls -latr
+  354  git add *
+  355  git commit -m "second commit" -a
+  356  git branch
+  357  git push -u origin main
+  358  git push -u origin main
+  359  git pull
+  360  git branch
+  361  git push -u origin main
+  362  git push -f origin main
