@@ -1,0 +1,208 @@
+    1  sudo snap install epiphany
+    2  epiphany
+    3  pwd
+    4  ls -a
+    5  cd Desktop/
+    6  cd cs149/
+    7  cd WS1/
+    8  history > cmd.log
+    9  ls -latr
+   10  git add cmd.log *.c
+   11  git commit -m "First Commit" -a
+   12  git branch
+   13  git push -u origin main
+   14  history > cmd.log
+   15  epiphany
+   16  sudo apt-get install chrome
+   17  sudo snap remove firefox
+   18  sudo apt install firefox
+   19  pwd
+   20  sudo install clion --classic
+   21  sudo snap list
+   22  sudo snap install clion
+   23  sudo apt install spice-vdagent
+   24  pwd
+   25  ls
+   26  cd Desktop/
+   27  ls
+   28  sudo mount -t virtiofs share Cs149/
+   29  pwd
+   30  sudo mount -t virtiofs share /home/townsag/Desktop/Cs149/
+   31  pwd
+   32  mkdir shared_dir
+   33  sudo mount -t virtiofs share shared_dir/
+   34  sudo apt install spice-vdagent spice-webdavd
+   35  pwd
+   36  sudo apt install default-jre
+   37  java -version
+   38  ./clion-2022.3.2/bin/clion.sh
+   39  sudo tar CLion-2022.3.2-aarch64.tar.gz -C /opt/
+   40  sudo tar xvzf CLion-2022.3.2-aarch64.tar.gz -C /opt/
+   41  pwd
+   42  ls -a
+   43  cd Desktop/
+   44  ls -a
+   45  sudo tar xvzf CLion-2022.3.2-aarch64.tar.gz -C /opt/
+   46  sh /opt/clion-2022.3.2/bin/clion.sh
+   47  cd temp/
+   48  touch commands.txt
+   49  ls
+   50  vi commands.txt 
+   51  history install_clion.log
+   52  history > install_clion.log
+   53  sudo apt install kate -y
+   54  pwed
+   55  pwd
+   56  kate
+   57  sudo snap install kate --classic
+   58  pwd
+   59  cd Desktop/cs149/WS1/
+   60  ls
+   61  pwd
+   62  cd Desktop/cs149/Ws1/
+   63  ls
+   64  cd lab1.15
+   65  ls
+   66  gcc main\ 2.c 
+   67  sudo apt install gcc
+   68  gcc main\ 2.c 
+   69  cd Desktop/cs149/Ws1/lab1.lab1.15/
+   70  cd Desktop/cs149/Ws1/lab1.15/
+   71  ls
+   72  gcc main\ 2.c 
+   73  cd ..
+   74  cd..
+   75  cd ..
+   76  pwd
+   77  ls -a
+   78  cd ..
+   79  ls -a
+   80  ls -latr
+   81  cd ..
+   82  ls -latr
+   83  cd usr/bin
+   84  ls -latr
+   85  which gcc
+   86  cd ..
+   87  which gcc
+   88  cd /home/townsag/
+   89  pwd
+   90  gcc --version
+   91  sudo apt install build-essential
+   92  apt-get update
+   93  sudo apt-get update
+   94  sudo apt install build-essential
+   95  gcc --version
+   96  pwd
+   97  cd Desktop/cs149/Ws1/lab1.15/
+   98  ls
+   99  gcc main\ 2.c 
+  100  ./main\ 2.c
+  101  sudo /.main\ 2.c
+  102  ls -latr
+  103  ls
+  104  gcc main2.c
+  105  ./main2.c
+  106  sudo ./main2.c
+  107  gcc -o main2.c main2.c
+  108  /main2.c
+  109  ./main2.c
+  110  cd ..
+  111  cd temp/
+  112  ls
+  113  mkdir c_test
+  114  touch test
+  115  vi test
+  116  gcc -o test test.c
+  117  mv test test.c
+  118  ls
+  119  gcc - test test.c
+  120  gcc -o test test.c
+  121  ./test.c
+  122  sudo ./test.c
+  123  ls
+  124  ls -latr
+  125  ./test
+  126  cd /Desktop
+  127  cd ..
+  128  cd cs149/Ws1/
+  129  la
+  130  ls
+  131  cd lab1.15
+  132  ls
+  133  ./main2
+  134  gcc -o main2 main2.c
+  135  ./main2
+  136  cd..
+  137  cd ..
+  138  ls
+  139  cd ..
+  140  git status
+  141  pwd
+  142  ls -latr
+  143  cd WS2
+  144  ls
+  145  cd Lab2.25
+  146  ls
+  147  mv Lab2.25.c /WS2
+  148  sudo mv Lab2.25.c /WS2
+  149  ls
+  150  cd ..
+  151  ls
+  152  ls -latr
+  153  whitch Lab2.25.c
+  154  which Lab2.25.c
+  155  ls
+  156  rmdir lab2.25
+  157  rmdir Lab2.25
+  158  cd Lab2.25
+  159  ls -latr
+  160  cd ..
+  161  rm -r Lab2.25
+  162  ls
+  163  cd Lab2.29
+  164  ls
+  165  mv main.c Lab2.29.c
+  166  ls -latr
+  167  mv Lab2.29.c ..
+  168  ls
+  169  ls -latr
+  170  cd ..
+  171  ls 
+  172  rm -r Lab2.29
+  173  ls 
+  174  cd Lab2.32
+  175  ls
+  176  mv main.c Lab2.32.c
+  177  ls
+  178  mv Lab2.32.c ..
+  179  cd ..
+  180  ls
+  181  rm -r Lab2.32
+  182  cd Lab2.34/
+  183  ls
+  184  mv main.c Lab2.34.c
+  185  mv Lab2.34.c ..
+  186  cd ..
+  187  ls
+  188  rm -r Lab2.34
+  189  ls
+  190  git status
+  191  pwd
+  192  date
+  193  pwd
+  194  cd Desktop/
+  195  ls -latr
+  196  mkdir ws2
+  197  cd ws2
+  198  ls -latr
+  199  echo $?
+  200  man ps
+  201  ps aux
+  202  top
+  203  pwd
+  204  cd ..
+  205  cd cs149/
+  206  ls
+  207  cd WS2/
+  208  history > worksheet2.log
