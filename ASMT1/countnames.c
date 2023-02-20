@@ -3,9 +3,30 @@
 #include <string.h>
 
 
+/**
+ * Description: This module counts the number of each unique name in a file and then
+ * 		outputs the names and their counts with one name and count per line
+ * Author names: Andrew Townsend
+ * Author emails: andrew.townsend@sjsu.edu
+ * Last modified date: 2/19/2023
+ * Creation date: 2/19/2023
+ **/
+
+
 int name_length = 30;
 int num_names = 100;
 
+
+/**
+ * This function searches for the location of a name in a list of names
+ * Assumption: the length of the name string is less than or equal to the name_length,
+ * 		the size of the names array is in accordance with the global variables
+ * 		name length and num names, those global variables are available,
+ * 		the number of names is positive
+ * Input parameters: names (a two D array of charecters), name(a string), num_names(an int) 
+ * Returns: an integer, with -1 meaining not found and anything else meaning the location of the
+ * 		found name in the array
+**/
 int find_name(char names[num_names][name_length], char* name, int num_names){
         for(int i = 0; i < num_names; i++){
                 if(strcmp(names[i], name) == 0){
@@ -16,6 +37,13 @@ int find_name(char names[num_names][name_length], char* name, int num_names){
 }
 
 
+/**
+ * This function reads a file and records the occurance of each unique name as well as the number of
+ * times that each unique name is mentioned. Then it outputs those values in a list
+ * Assumption: this program has read and write privaleges
+ * Input parameters: the location of the file to be read
+ * Returns: an integer corresponding to the status of the program output
+**/
 int main(int argc, char* argv[]){
 	if(argc == 1){
 		exit(0);
@@ -70,7 +98,7 @@ int main(int argc, char* argv[]){
 		}
 		line_counter++;
 	}
-	int status = fclose(my_file);
+	fclose(my_file);
 
 	for(int i = 0; i < num_stored_names; i++){
 		printf("%s: %d\n", names[i], names_counter[i]);
