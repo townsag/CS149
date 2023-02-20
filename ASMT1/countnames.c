@@ -47,10 +47,14 @@ int main(int argc, char* argv[]){
 		if(strcmp(line, "\n") == 0){
 			fprintf(stderr, "Warning - line %d is empty.\n", line_counter); 
 		} else {
+			// remove the newline at the end of the most recently read line with a null
+			if(line[strlen(line) - 1] == '\n'){
+				line[strlen(line) - 1] = '\0';
+			}
 			//look to see if the name in this line is stored in the names array
 			int location = find_name(names, line, num_names);
 			if(location != -1){
-				printf("found at location %d", location);
+				//printf("found at location %d", location);
 				names_counter[location] = names_counter[location] + 1;
 			}
 			//if so, increment the number of instances of that name in the counter array
@@ -62,12 +66,15 @@ int main(int argc, char* argv[]){
 				names_counter[num_stored_names] = 1;
 				num_stored_names++;
 			}
-			printf("%s", line);
+			//printf("%s", line);
 		}
 		line_counter++;
 	}
-
 	int status = fclose(my_file);
+
+	for(int i = 0; i < num_stored_names; i++){
+		printf("%s: %d\n", names[i], names_counter[i]);
+	}
 
 	return 0;
 }
