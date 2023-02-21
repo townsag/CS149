@@ -1,0 +1,112 @@
+    1  sudo apt install ubuntu-desktop
+    2  sudo reboot
+    3  sudo apt install spice-vdagent
+    4  git --version
+    5  git clone https://github.com/townsag/CS149.git
+    6  pwd
+    7  ls -latr
+    8  mv CS149/ Desktop/
+    9  pwd
+   10  cd Desktop/
+   11  ls
+   12  cd CS149/
+   13  ls
+   14  git status
+   15  git branch
+   16  kate
+   17  sudo apt install kate
+   18  kate
+   19  pwd
+   20  ls -latr
+   21  cd WS3
+   22  ls -latr
+   23  vi Lab5_21.c
+   24  ls -latr
+   25  nano Lab5_21.c
+   26  vi Lab5_21.c
+   27  gcc --version
+   28  sudo apt install gcc
+   29  gcc --version
+   30  gcc -o Lab5_21 Lab5_21.c -Wall -Werror
+   31  ./Lab5_21 
+   32  vi Lab5_21.c
+   33  gcc -o Lab5_21 Lab5_21.c -Wall -Werror
+   34  ./Lab5_21 
+   35  vi Lab5_21.c
+   36  gcc -o Lab5_21 Lab5_21.c -Wall -Werror
+   37  ./Lab5_21 
+   38  vi Lab5_21.c
+   39  gcc -o Lab5_21 Lab5_21.c -Wall -Werror
+   40  ./Lab5_21 
+   41  vi Lab5_21.c
+   42  gcc -o Lab5_21 Lab5_21.c -Wall -Werror
+   43  vi Lab5_21.c
+   44  gcc -o Lab5_21 Lab5_21.c -Wall -Werror
+   45  ./Lab5_21 
+   46  vi Lab5_21.c
+   47  gcc -o Lab5_21 Lab5_21.c -Wall -Werror
+   48  ./Lab5_21 
+   49  vi Lab5_21.c
+   50  gcc -o Lab5_21 Lab5_21.c -Wall -Werror
+   51  ./Lab5_21 
+   52  vi Lab5_21.c
+   53  gcc -o Lab5_21 Lab5_21.c -Wall -Werror
+   54  ./Lab5_21 
+   55  vi Lab5_21.c
+   56  gcc -o Lab5_21 Lab5_21.c -Wall -Werror
+   57  ./Lab5_21 
+   58  vi Lab5_21.c
+   59  gcc -o Lab5_21 Lab5_21.c -Wall -Werror
+   60  ./Lab5_21 
+   61  cat Lab5_21.c
+   62  pwd
+   63  git status
+   64  git add Lab5_21.c
+   65  git commit -m "finished lab 5.21"
+   66  git config --global user.email "townsag@gmail.com"
+   67  git config --glibal user.name "Andrew Townsend"
+   68  git config --global user.name "Andrew Townsend"
+   69  git commit -m "finished lab 5.21"
+   70  git push origin main
+   71  vi Lab5_22.c
+   72  gcc -o Lab5_22 Lab5_22.c
+   73  vi Lab5_22.c
+   74  gcc -o Lab5_22 Lab5_22.c
+   75  ./Lab5_22
+   76  cat Lab5_22.c
+   77  vi Lab5_22.c
+   78  git status
+   79  git add Lab5_22.c
+   80  git commit -m "finished lab 5.22"
+   81  git push origin main
+   82  vi Lab5_23.c
+   83  gcc -o Lab5_23 Lab5_23.c
+   84  vi Lab5_23.c
+   85  gcc -o Lab5_23 Lab5_23.c
+   86  vi Lab5_23.c
+   87  gcc -o Lab5_23 Lab5_23.c
+   88  ./Lab5_23
+   89  vi Lab5_23.c
+   90  gcc -o Lab5_23 Lab5_23.c
+   91  ./Lab5_23
+   92  cat Lab5_23.c
+   93  git status
+   94  git add Lab5_23.c
+   95  git commit -m "finished lab 5.32"
+   96  git push origin main
+   97  pwd
+   98  cd Desktop/CS149/WS3/
+   99  pwd
+  100  ls
+  101  wget https://github.com/torvalds/linux/archive/master.zip
+  102  unzip master.zip 
+  103  cd linux-master/
+  104  pwd
+  105  alias l='ls -latr'
+  106  l
+  107  find . -name mem.c
+  108  find . -name mem.c | xargs head
+  109  find . -name mem.c | xargs grep 86
+  110  cd ..
+  111  pwd
+  112  history > worksheet3.log
