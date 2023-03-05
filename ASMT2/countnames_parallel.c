@@ -72,7 +72,8 @@ int main(int argc, char* argv[]){
 	while(fgets(line, name_length, my_file) != NULL){
 		//check to see if an empty line
 		//if so, ignore the line and print to standard error "Warning - line _ is empty.\n"
-		if(strcmp(line, "\n") == 0){
+		//if(strcmp(line, "\n") == 0){
+		if(line[0] == '\n' || line[0] = ' '){
 			fprintf(stderr, "Warning - line %d is empty.\n", line_counter); 
 		} else {
 			// remove the newline at the end of the most recently read line with a null
