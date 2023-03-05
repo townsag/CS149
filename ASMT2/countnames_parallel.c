@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 
 /**
@@ -48,12 +49,8 @@ int main(int argc, char* argv[]){
 	if(argc == 1){
 		exit(0);
 	}
-
-	FILE* my_file  = fopen(argv[1], "r");
-	if(my_file == NULL){
-		printf("cannot open file\n");
-	}
-
+	
+	//define variables that the parent process will need
 	char names[num_names][name_length];
 	int names_counter[num_names];
 	int num_stored_names = 0;
@@ -66,14 +63,43 @@ int main(int argc, char* argv[]){
 		}
 	}
 
+	pid_t parent = getpid();
+	pid_t pid = parent;
+	printf("parent pid is: %d\n", parent);
+	//int children[argc - 1];
+	//define child processes for each input file
+	for(int i = 0; i < 5; i++){
+		if(getpid() == parent){
+			pid = fork();
+			if (rc < 0) {  // fork failed; exit
+        			fprintf(stderr, "fork failed\n");
+        			exit(1);
+    			}
+
+		}
+	}
+	printf("pid: %d, chis is my actual pid %d\n", pid, getpid());
+	return 0;
+
+
+	/*
+	//defining variables that child processes will need
+	FILE* my_file  = fopen(argv[1], "r");
+        if(my_file == NULL){
+                printf("cannot open file\n");
+        }
+
 	char line[name_length];
 	int line_counter = 1;
+
+	//will also need to define a pipe here
+
 	// start reading the file line by line
 	while(fgets(line, name_length, my_file) != NULL){
 		//check to see if an empty line
 		//if so, ignore the line and print to standard error "Warning - line _ is empty.\n"
 		//if(strcmp(line, "\n") == 0){
-		if(line[0] == '\n' || line[0] = ' '){
+		if(line[0] == '\n' || line[0] == ' '){
 			fprintf(stderr, "Warning - line %d is empty.\n", line_counter); 
 		} else {
 			// remove the newline at the end of the most recently read line with a null
@@ -104,6 +130,7 @@ int main(int argc, char* argv[]){
 	for(int i = 0; i < num_stored_names; i++){
 		printf("%s: %d\n", names[i], names_counter[i]);
 	}
-
+	*/
+	
 	return 0;
 }
