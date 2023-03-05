@@ -28,27 +28,29 @@ int main(int argc, char* argv[]){
 			printf("i = %d\n", i);
 			printf("==========\n");
 
-			int input_fd = open(argv[i], O_RDONLY);
-			if(input_fd == -1){
-				//change to "range: cannot open file"
-				fprintf(stderr,"cannot open file: %s\n", argv[i]);
-			}
-
 			// Close the write end of the pipe
             		close(fd[0]);
 
 			// Read data from the input file and write it to the pipe
-			char buffer[20];
-			int bytes_read;
-			while ((bytes_read = read(input_fd, buffer, sizeof(buffer))) > 0) {
-				if (write(fd[1], buffer, bytes_read) == -1) {
-					fprintf(stderr, "error writing to pipe");
+			int name_length = 30;
+			char line[name_length];
+			//int bytes_read;
+			FILE* my_file  = fopen(argv[i], "r");
+
+			if(my_file == NULL){
+				fprintf(stderr, "range: cannot open file\n");
+			}
+
+			while(fgets(line, name_length, my_file) != NULL){
+				size_t len = strlen(line);
+				if(write(fd[1], line, len) != len){
+					fprintf(stderr, "error writing to pipe\n");
 					exit(1);
 				}
 			}
 
 			// Close the input file and the write end of the pipe
-			close(input_fd);
+			fclose(my_file);
 			close(fd[1]);
 			exit(0);
 		}
@@ -56,7 +58,7 @@ int main(int argc, char* argv[]){
 	printf("parent process, pid: %d, actual id: %d\n", pid, getpid() );
 	close(fd[1]);
 	
-	char buff[20];
+	char buff[30];
 	int bytes_read;
 	while ((bytes_read = read(fd[0], buff, sizeof(buff))) > 0) {
 		printf("%.*s", bytes_read, buff);
