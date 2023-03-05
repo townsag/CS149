@@ -13,8 +13,9 @@ int main(int argc, char* argv[]){
 		fprintf(stderr, "pipe failed\n");
 		exit(1);
 	}
-
-	for(int i = 1; i <= argc; i++){
+	
+	printf("argc: %d\n", argc);
+	for(int i = 1; i < argc; i++){
 		pid = fork();
 		if(pid < 0){
 			fprintf(stderr, "fork failed\n");
@@ -22,13 +23,14 @@ int main(int argc, char* argv[]){
 		else if(pid == 0){
 
 			printf("==========");
-			printf("child process #%d, actual id: %d\n", i + 1, getpid());
+			printf("child process #%d, actual id: %d\n", i, getpid());
 			printf("reading file: %s\n", argv[i]);
 			printf("i = %d\n", i);
 			printf("==========\n");
 
 			int input_fd = open(argv[i], O_RDONLY);
 			if(input_fd == -1){
+				//change to "range: cannot open file"
 				fprintf(stderr,"cannot open file: %s\n", argv[i]);
 			}
 
