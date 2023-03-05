@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
+#include <sys/wait.h>
 
 /**
  * Description: This module counts the number of each unique name in a file and then
@@ -65,20 +65,29 @@ int main(int argc, char* argv[]){
 
 	pid_t parent = getpid();
 	pid_t pid = parent;
-	printf("parent pid is: %d\n", parent);
+	int file_index = 0;
+	printf("parent pid is: %d\n\n", parent);
 	//int children[argc - 1];
 	//define child processes for each input file
 	for(int i = 0; i < 5; i++){
 		if(getpid() == parent){
 			pid = fork();
-			if (rc < 0) {  // fork failed; exit
+			file_index++;
+			if (pid < 0) {  // fork failed; exit
         			fprintf(stderr, "fork failed\n");
         			exit(1);
     			}
 
 		}
 	}
-	printf("pid: %d, chis is my actual pid %d\n", pid, getpid());
+
+	if(pid == 0){
+		printf("pid: %d, chis is my actual pid %d, file_index: %d\n", pid, getpid(), file_index);
+	} else {
+		wait(NULL);
+		printf("parent process\n");
+	}
+		
 	return 0;
 
 
