@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <string.h>
-
-
+#include <sys/wait.h>
+#include <unistd.h> 
+#include <fcntl.h>
 
 int main(int argc, char* argv[]){
 	int fd[2];
@@ -22,8 +21,11 @@ int main(int argc, char* argv[]){
 		}
 		else if(pid == 0){
 
-
+			printf("==========");
 			printf("child process #%d, actual id: %d\n", i + 1, getpid());
+			printf("reading file: %s\n", argv[i]);
+			printf("i = %d\n", i);
+			printf("==========\n");
 
 			int input_fd = open(argv[i], O_RDONLY);
 			if(input_fd == -1){
@@ -54,15 +56,15 @@ int main(int argc, char* argv[]){
 	
 	char buff[20];
 	int bytes_read;
-	while ((bytes_read = read(fd[0], buffer, sizeof(buffer))) > 0) {
-		printf("%.*s", bytes_read, buffer);
+	while ((bytes_read = read(fd[0], buff, sizeof(buff))) > 0) {
+		printf("%.*s", bytes_read, buff);
     	}
 
 	// Close the read end of the pipe
 	close(fd[0]);
 
 	// Wait for all child processes to complete
-	for (int i = 0; i < NUM_CHILDREN; i++) {
+	for (int i = 1; i <= argc; i++) {
         	wait(NULL);
 	}
 
