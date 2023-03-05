@@ -18,12 +18,18 @@ int read_to_pipe(int my_pipe[], char* file_name){
 		fprintf(stderr, "range: cannot open file\n");
 	}
 	
+	int line_count = 1;
 	while(fgets(line, name_length, my_file) != NULL){
-		size_t len = strlen(line);
-		if(write(my_pipe[1], line, len) != len){
-			fprintf(stderr, "error writing to pipe\n");
-                        return 1;
+		if(strcmp(line, "\n") == 0 || strcmp(line, " \n") == 0){
+			fprintf(stderr, "Warning - file %s line %d is empty.\n", file_name, line_count);
+		} else {
+			size_t len = strlen(line);
+			if(write(my_pipe[1], line, len) != len){
+				fprintf(stderr, "error writing to pipe\n");
+                        	return 1;
+			}
 		}
+		line_count++;
 	}
 	// Close the input file and the write end of the pipe
 	fclose(my_file);
@@ -48,43 +54,10 @@ int main(int argc, char* argv[]){
 			fprintf(stderr, "fork failed\n");
 		}
 		else if(pid == 0){
-
 			exit(read_to_pipe(fd, argv[i]));
-
-			/*	
-			printf("==========");
-			printf("child process #%d, actual id: %d\n", i, getpid());
-			printf("reading file: %s\n", argv[i]);
-			printf("i = %d\n", i);
-			printf("==========\n");
-
-			// Close the write end of the pipe
-            		close(fd[0]);
-
-			// Read data from the input file and write it to the pipe
-			int name_length = 30;
-			char line[name_length];
-			//int bytes_read;
-			FILE* my_file  = fopen(argv[i], "r");
-
-			if(my_file == NULL){
-				fprintf(stderr, "range: cannot open file\n");
-			}
-
-			while(fgets(line, name_length, my_file) != NULL){
-				size_t len = strlen(line);
-				if(write(fd[1], line, len) != len){
-					fprintf(stderr, "error writing to pipe\n");
-					exit(1);
-				}
-			}
-
-			// Close the input file and the write end of the pipe
-			fclose(my_file);
-			close(fd[1]);
-			exit(0);*/
 		}
 	}
+
 	printf("parent process, pid: %d, actual id: %d\n", pid, getpid() );
 	close(fd[1]);
 	
