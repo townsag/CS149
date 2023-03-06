@@ -43,7 +43,7 @@ int main(int argc, char* argv[]){
         	exit(-1);
     	}
 	
-	printf("argc: %d\n", argc);
+	//printf("argc: %d\n", argc);
 	for(int i = 1; i < argc; i++){
 		pid = fork();
 		if(pid < 0){
@@ -73,7 +73,7 @@ int main(int argc, char* argv[]){
 		
 		if(num != 0){
 
-			printf("this is num: %ld\n", num);
+			//printf("this is num: %ld\n", num);
 			if(buff[strlen(buff) - 1] == '\n'){
 				buff[strlen(buff) - 1] = '\0';
                 	}
@@ -87,12 +87,12 @@ int main(int argc, char* argv[]){
 			}
 		}
 
-		printf("got here\n");
+		//printf("got here\n");
 		//fflush(stdout);
 		
 		if(waitpid(-1, NULL, WNOHANG) > 0){
 			num_dead++;
-			printf("===================num dead: %d\n", num_dead);
+			//printf("===================num dead: %d\n", num_dead);
 		}
 	}
 
@@ -123,7 +123,7 @@ int main(int argc, char* argv[]){
 		}
 	}*/
 
-	printf("All child processes have completed\n");
+	//printf("All child processes have completed\n");
 	//sem_unlink("/my_semaphore");
         //sem_close(sem);
 	sem_destroy(&sem);
@@ -147,6 +147,7 @@ int read_to_pipe(int my_pipe[], char* file_name, sem_t sem){
 
         if(my_file == NULL){
                 fprintf(stderr, "range: cannot open file\n");
+		exit(1);
         }
 
         int line_count = 1;
@@ -155,9 +156,9 @@ int read_to_pipe(int my_pipe[], char* file_name, sem_t sem){
                         fprintf(stderr, "Warning - file %s line %d is empty.\n", file_name, line_count);
                 } else {
                         //size_t len = strlen(line);
-			printf("writing to pipe: %s\n", line);
+			//printf("writing to pipe: %s\n", line);
 			sem_wait(&sem);
-			printf("writing to pipe: '%s'\n", line);
+			//printf("writing to pipe: '%s'\n", line);
                         //if(write(my_pipe[1], line, len) != len){
 			// instead write the entire 30 charectars so that I can always read 30 charectars
                         if(write(my_pipe[1], line, NAME_LENGTH) != NAME_LENGTH){
