@@ -70,17 +70,23 @@ int main(int argc, char* argv[]){
 	while((num = read(fd[0], buff, NAME_LENGTH)) > 0 || num_dead < (argc - 1)){
 	//while((num = read(fd[0], buff, NAME_LENGTH)) > 0 && (pid = waitpid(-1, &status, WNOHANG)) >= 0){
 		//if the name is in the array of my_data structs then increment the counter
-		if(buff[strlen(buff) - 1] == '\n'){
-			buff[strlen(buff) - 1] = '\0';
-                }
-		int name_index = find_name(namecounts, buff, num_names);
-		if(name_index != -1){
-			namecounts[name_index].count = namecounts[name_index].count + 1;
-		} else {
-			strcpy(namecounts[num_names].name, buff);
-			namecounts[num_names].count = 1;
-			num_names++;
+		
+		if(num != 0){
+
+			printf("this is num: %ld\n", num);
+			if(buff[strlen(buff) - 1] == '\n'){
+				buff[strlen(buff) - 1] = '\0';
+                	}
+			int name_index = find_name(namecounts, buff, num_names);
+			if(name_index != -1){
+				namecounts[name_index].count = namecounts[name_index].count + 1;
+			} else {
+				strcpy(namecounts[num_names].name, buff);
+				namecounts[num_names].count = 1;
+				num_names++;
+			}
 		}
+
 		printf("got here\n");
 		//fflush(stdout);
 		
