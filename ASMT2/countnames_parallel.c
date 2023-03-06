@@ -1,145 +1,150 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <sys/wait.h>
-
-/**
- * Description: This module counts the number of each unique name in a file and then
- * 		outputs the names and their counts with one name and count per line
- * Author names: Andrew Townsend
- * Author emails: andrew.townsend@sjsu.edu
- * Last modified date: 2/19/2023
- * Creation date: 2/19/2023
- **/
+#include <unistd.h> 
+#include <fcntl.h>
+#include <semaphore.h>
 
 
-int name_length = 30;
-int num_names = 100;
+#define NAME_LENGTH 30
+#define MAX_NAMES 100
 
 
-/**
- * This function searches for the location of a name in a list of names
- * Assumption: the length of the name string is less than or equal to the name_length,
- * 		the size of the names array is in accordance with the global variables
- * 		name length and num names, those global variables are available,
- * 		the number of names is positive
- * Input parameters: names (a two D array of charecters), name(a string), num_names(an int) 
- * Returns: an integer, with -1 meaining not found and anything else meaning the location of the
- * 		found name in the array
-**/
-int find_name(char names[num_names][name_length], char* name, int num_names){
+struct my_data {
+	char name[NAME_LENGTH];
+	int count;
+};
+
+int read_to_pipe(int my_pipe[], char* file_name, sem_t sem);
+void initialize(struct my_data array[], int len);
+int find_name(struct my_data array[], char* name, int num_names);
+
+
+int main(int argc, char* argv[]){
+	int fd[2];
+	sem_t sem;
+	pid_t pid;
+
+	if(pipe(fd) == -1){
+		fprintf(stderr, "pipe failed\n");
+		exit(1);
+	}
+
+	if (sem_init(&sem, 1, 1) != 0) {
+        	perror("Error initializing semaphore");
+        	exit(-1);
+    	}
+
+	for(int i = 1; i < argc; i++){
+		pid = fork();
+		if(pid < 0){
+			fprintf(stderr, "fork failed\n");
+		}
+		else if(pid == 0){
+			exit(read_to_pipe(fd, argv[i], sem));
+		}
+	}
+
+	//close the write end of the pipe
+	close(fd[1]);
+	
+	struct my_data namecounts[MAX_NAMES];
+	initialize(namecounts, MAX_NAMES);
+	int num_names = 0;
+
+	//read a line from the pipe into the buffer
+	char buff[NAME_LENGTH];
+	size_t num;
+	int num_dead = 0;
+
+	while((num = read(fd[0], buff, NAME_LENGTH)) > 0 || num_dead < (argc - 1)){
+		//check to see if anything was actually read or if the while loops is just waiting for childrent to end
+		if(num != 0){
+			if(buff[strlen(buff) - 1] == '\n'){
+				buff[strlen(buff) - 1] = '\0';
+                	}
+			int name_index = find_name(namecounts, buff, num_names);
+			if(name_index != -1){
+				namecounts[name_index].count = namecounts[name_index].count + 1;
+			} else {
+				strcpy(namecounts[num_names].name, buff);
+				namecounts[num_names].count = 1;
+				num_names++;
+			}
+		}
+		//collect the exit code of the dead child process
+		if(waitpid(-1, NULL, WNOHANG) > 0){
+			num_dead++;
+		}
+	}
+
+	if(num == -1){
+		fprintf(stderr,"pipe read error");
+	}	
+	
+
+	// Close the read end of the pipe
+	close(fd[0]);
+	sem_destroy(&sem);
+
+	for(int i = 0; i < num_names; i++){
+		printf("%s: %d \n", namecounts[i].name, namecounts[i].count);
+	}
+	
+	return 0;
+}
+
+
+int read_to_pipe(int my_pipe[], char* file_name, sem_t sem){
+        // Close the write end of the pipe
+        close(my_pipe[0]);
+        // Read data from the input file and write it to the pipe
+        char line[NAME_LENGTH];
+        FILE* my_file  = fopen(file_name, "r");
+
+        if(my_file == NULL){
+                fprintf(stderr, "range: cannot open file\n");
+		exit(1);
+        }
+
+        int line_count = 1;
+        while(fgets(line, NAME_LENGTH, my_file) != NULL){
+                if(strcmp(line, "\n") == 0 || strcmp(line, " \n") == 0){
+                        fprintf(stderr, "Warning - file %s line %d is empty.\n", file_name, line_count);
+                } else {
+			sem_wait(&sem);
+			// instead write the entire 30 charectars so that I can always read 30 charectars
+                        if(write(my_pipe[1], line, NAME_LENGTH) != NAME_LENGTH){
+				fprintf(stderr, "error writing to pipe\n");
+                                return 1;
+                        }
+			sem_post(&sem);
+                }
+                line_count++;
+        }
+        // Close the input file and the write end of the pipe
+        fclose(my_file);
+        close(my_pipe[1]);
+        return 0;
+}
+
+
+void initialize(struct my_data array[], int len){
+	for(int i = 0; i < len; i++){
+		for(int j = 0; j < NAME_LENGTH; j++){
+			array[i].name[j] = '\0';
+		}
+		array[i].count = 0;
+	}
+}
+
+
+int find_name(struct my_data array[], char* name, int num_names){
         for(int i = 0; i < num_names; i++){
-                if(strcmp(names[i], name) == 0){
+                if(strcmp(array[i].name, name) == 0){
         		return(i);
 		}
 	}
         return -1;
-}
-
-
-/**
- * This function reads a file and records the occurance of each unique name as well as the number of
- * times that each unique name is mentioned. Then it outputs those values in a list
- * Assumption: this program has read and write privaleges
- * Input parameters: the location of the file to be read
- * Returns: an integer corresponding to the status of the program output
-**/
-int main(int argc, char* argv[]){
-	if(argc == 1){
-		exit(0);
-	}
-	
-	//define variables that the parent process will need
-	char names[num_names][name_length];
-	int names_counter[num_names];
-	int num_stored_names = 0;
-
-	//initialize the strings in names to zero and the counter to zero
-	for(int i = 0; i < num_names; i++){
-		names_counter[i] = 0;
-		for(int j = 0; j < name_length; j++){
-			names[i][j] = '\0';
-		}
-	}
-
-	pid_t parent = getpid();
-	pid_t pid = parent;
-	int file_index = 0;
-	printf("parent pid is: %d\n\n", parent);
-	//int children[argc - 1];
-	//define child processes for each input file
-	for(int i = 0; i < 5; i++){
-		if(getpid() == parent){
-			pid = fork();
-			file_index++;
-			if (pid < 0) {  // fork failed; exit
-        			fprintf(stderr, "fork failed\n");
-        			exit(1);
-    			}
-
-		}
-	}
-
-	if(pid == 0){
-		printf("pid: %d, chis is my actual pid %d, file_index: %d\n", pid, getpid(), file_index);
-	} else {
-		wait(NULL);
-		printf("parent process\n");
-	}
-		
-	return 0;
-
-
-	/*
-	//defining variables that child processes will need
-	FILE* my_file  = fopen(argv[1], "r");
-        if(my_file == NULL){
-                printf("cannot open file\n");
-        }
-
-	char line[name_length];
-	int line_counter = 1;
-
-	//will also need to define a pipe here
-
-	// start reading the file line by line
-	while(fgets(line, name_length, my_file) != NULL){
-		//check to see if an empty line
-		//if so, ignore the line and print to standard error "Warning - line _ is empty.\n"
-		//if(strcmp(line, "\n") == 0){
-		if(line[0] == '\n' || line[0] == ' '){
-			fprintf(stderr, "Warning - line %d is empty.\n", line_counter); 
-		} else {
-			// remove the newline at the end of the most recently read line with a null
-			if(line[strlen(line) - 1] == '\n'){
-				line[strlen(line) - 1] = '\0';
-			}
-			//look to see if the name in this line is stored in the names array
-			int location = find_name(names, line, num_names);
-			if(location != -1){
-				//printf("found at location %d", location);
-				names_counter[location] = names_counter[location] + 1;
-			}
-			//if so, increment the number of instances of that name in the counter array
-			//else, add the recently read name to the names array and then set the counter
-			//for the recently added name to one and increment the number of stored names
-			else{
-				strcpy(names[num_stored_names], line);
-				//names[num_stored_names] = line;
-				names_counter[num_stored_names] = 1;
-				num_stored_names++;
-			}
-			//printf("%s", line);
-		}
-		line_counter++;
-	}
-	fclose(my_file);
-
-	for(int i = 0; i < num_stored_names; i++){
-		printf("%s: %d\n", names[i], names_counter[i]);
-	}
-	*/
-	
-	return 0;
 }
