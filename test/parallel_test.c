@@ -78,12 +78,12 @@ int main(int argc, char* argv[]){
 	// Close the read end of the pipe
 	close(fd[0]);
 
-	/*
+	
 	// Wait for all child processes to complete
 	for (int i = 1; i < argc; i++) {
         	wait(NULL);
-	}*/
-	
+	}
+	/*
 	int status;
 	while (1) {
         	pid_t child_pid = waitpid(-1, &status, WNOHANG);
@@ -94,7 +94,7 @@ int main(int argc, char* argv[]){
             		// child process has terminated
             		printf("Child process %d terminated\n", child_pid);
 		}
-	}
+	}*/
 
 	printf("All child processes have completed\n");
 	sem_unlink("/my_semaphore");
@@ -102,7 +102,7 @@ int main(int argc, char* argv[]){
 	
 	for(int i = 0; i < num_names; i++){
 		printf("==========index: %d==========\n", i);
-		printf("%s :%d\n", namecounts[i].name, namecounts[i].count);
+		printf("%s: %d \n", namecounts[i].name, namecounts[i].count);
 	}
 	
 	
@@ -126,11 +126,13 @@ int read_to_pipe(int my_pipe[], char* file_name, sem_t* sem){
                 if(strcmp(line, "\n") == 0 || strcmp(line, " \n") == 0){
                         fprintf(stderr, "Warning - file %s line %d is empty.\n", file_name, line_count);
                 } else {
-                        size_t len = strlen(line);
+                        //size_t len = strlen(line);
 			sem_wait(sem);
 			printf("writing to pipe: '%s'\n", line);
-                        if(write(my_pipe[1], line, len) != len){
-                                fprintf(stderr, "error writing to pipe\n");
+                        //if(write(my_pipe[1], line, len) != len){
+			// instead write the entire 30 charectars so that I can always read 30 charectars
+                        if(write(my_pipe[1], line, NAME_LENGTH) != NAME_LENGTH){
+				fprintf(stderr, "error writing to pipe\n");
                                 return 1;
                         }
 			sem_post(sem);
