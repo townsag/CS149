@@ -52,7 +52,7 @@ int main(int argc, char* argv[]){
 	size_t num;
 	while((num = read(fd[0], buff, NAME_LENGTH)) > 0){
 		//if the name is in the array of my_data structs then increment the counter
-		int name_index = find_name(namecounts, buff, NAME_LENGTH);
+		int name_index = find_name(namecounts, buff, num_names);
 		if(name_index != -1){
 			namecounts[name_index].count = namecounts[name_index].count + 1;
 		} else {
@@ -62,28 +62,39 @@ int main(int argc, char* argv[]){
 		}
 	}
 
-	if(num == 0){
+	if(num == -1){
 		fprintf(stderr,"pipe read error");
 	}	
-	//if its in the struct array then increment the counter for that name
-	//else add it to the struct array with a cound of 1	
 	
-	/*
-	char buff[NAME_LENGTH];
-	int bytes_read;
-	while ((bytes_read = read(fd[0], buff, sizeof(buff))) > 0) {
-		printf("%.*s", bytes_read, buff);
-    	}*/
 
 	// Close the read end of the pipe
 	close(fd[0]);
 
+	/*
 	// Wait for all child processes to complete
-	for (int i = 1; i <= argc; i++) {
+	for (int i = 1; i < argc; i++) {
         	wait(NULL);
+	}*/
+	
+	int status;
+	while (1) {
+        	pid_t child_pid = waitpid(-1, &status, WNOHANG);
+        	if (child_pid == 0) {
+			// no child process has terminated
+            		break;
+        	} else if (child_pid > 0) {
+            		// child process has terminated
+            		printf("Child process %d terminated\n", child_pid);
+		}
 	}
 
 	printf("All child processes have completed\n");
+	for(int i = 0; i < num_names; i++){
+		printf("==========index: %d==========\n", i);
+		printf("%s :%d\n", namecounts[i].name, namecounts[i].count);
+	}
+	
+	
 	return 0;
 }
 
