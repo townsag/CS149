@@ -16,14 +16,15 @@ struct my_data {
 	int count;
 };
 
-int read_to_pipe(int my_pipe[], char* file_name, sem_t* sem);
+int read_to_pipe(int my_pipe[], char* file_name, sem_t sem);
 void initialize(struct my_data array[], int len);
 int find_name(struct my_data array[], char* name, int num_names);
 
 
 int main(int argc, char* argv[]){
 	int fd[2];
-	sem_t* sem;
+	//sem_t* sem;
+	sem_t sem;
 	pid_t pid;
 
 	if(pipe(fd) == -1){
@@ -31,11 +32,16 @@ int main(int argc, char* argv[]){
 		exit(1);
 	}
 
-	sem = sem_open("/my_semaphore", O_CREAT, 0666, 1);
-	if (sem == SEM_FAILED) {
-		fprintf(stderr, "Error: Failed to create semaphore\n");
-		exit(1);
-	}
+	//sem = sem_open("/my_semaphore", O_CREAT, 0666, 1);
+	//if (sem == SEM_FAILED) {
+	//	fprintf(stderr, "Error: Failed to create semaphore\n");
+	//	exit(1);
+	//
+	//}
+	if (sem_init(&sem, 1, 1) != 0) {
+        	perror("Error initializing semaphore");
+        	exit(-1);
+    	}
 	
 	printf("argc: %d\n", argc);
 	for(int i = 1; i < argc; i++){
@@ -48,7 +54,7 @@ int main(int argc, char* argv[]){
 		}
 	}
 
-	printf("parent process, pid: %d, actual id: %d\n", pid, getpid() );
+	//printf("parent process, pid: %d, actual id: %d\n", pid, getpid() );
 	close(fd[1]);
 	
 	struct my_data namecounts[MAX_NAMES];
@@ -58,8 +64,15 @@ int main(int argc, char* argv[]){
 	//read a line from the buffer
 	char buff[NAME_LENGTH];
 	size_t num;
-	while((num = read(fd[0], buff, NAME_LENGTH)) > 0){
+	//int status;
+	int num_dead = 0;
+	//while((num = read(fd[0], buff, NAME_LENGTH)) > 0){
+	while((num = read(fd[0], buff, NAME_LENGTH)) > 0 || num_dead < (argc - 1)){
+	//while((num = read(fd[0], buff, NAME_LENGTH)) > 0 && (pid = waitpid(-1, &status, WNOHANG)) >= 0){
 		//if the name is in the array of my_data structs then increment the counter
+		if(buff[strlen(buff) - 1] == '\n'){
+			buff[strlen(buff) - 1] = '\0';
+                }
 		int name_index = find_name(namecounts, buff, num_names);
 		if(name_index != -1){
 			namecounts[name_index].count = namecounts[name_index].count + 1;
@@ -67,6 +80,13 @@ int main(int argc, char* argv[]){
 			strcpy(namecounts[num_names].name, buff);
 			namecounts[num_names].count = 1;
 			num_names++;
+		}
+		printf("got here\n");
+		//fflush(stdout);
+		
+		if(waitpid(-1, NULL, WNOHANG) > 0){
+			num_dead++;
+			printf("===================num dead: %d\n", num_dead);
 		}
 	}
 
@@ -80,9 +100,10 @@ int main(int argc, char* argv[]){
 
 	
 	// Wait for all child processes to complete
+	/*
 	for (int i = 1; i < argc; i++) {
         	wait(NULL);
-	}
+	}*/
 	/*
 	int status;
 	while (1) {
@@ -97,11 +118,12 @@ int main(int argc, char* argv[]){
 	}*/
 
 	printf("All child processes have completed\n");
-	sem_unlink("/my_semaphore");
-        sem_close(sem);
-	
+	//sem_unlink("/my_semaphore");
+        //sem_close(sem);
+	sem_destroy(&sem);
+
 	for(int i = 0; i < num_names; i++){
-		printf("==========index: %d==========\n", i);
+		//printf("==========index: %d==========\n", i);
 		printf("%s: %d \n", namecounts[i].name, namecounts[i].count);
 	}
 	
@@ -110,7 +132,7 @@ int main(int argc, char* argv[]){
 }
 
 
-int read_to_pipe(int my_pipe[], char* file_name, sem_t* sem){
+int read_to_pipe(int my_pipe[], char* file_name, sem_t sem){
         // Close the write end of the pipe
         close(my_pipe[0]);
         // Read data from the input file and write it to the pipe
@@ -127,7 +149,8 @@ int read_to_pipe(int my_pipe[], char* file_name, sem_t* sem){
                         fprintf(stderr, "Warning - file %s line %d is empty.\n", file_name, line_count);
                 } else {
                         //size_t len = strlen(line);
-			sem_wait(sem);
+			printf("writing to pipe: %s\n", line);
+			sem_wait(&sem);
 			printf("writing to pipe: '%s'\n", line);
                         //if(write(my_pipe[1], line, len) != len){
 			// instead write the entire 30 charectars so that I can always read 30 charectars
@@ -135,7 +158,7 @@ int read_to_pipe(int my_pipe[], char* file_name, sem_t* sem){
 				fprintf(stderr, "error writing to pipe\n");
                                 return 1;
                         }
-			sem_post(sem);
+			sem_post(&sem);
                 }
                 line_count++;
         }
