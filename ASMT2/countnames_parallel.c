@@ -16,10 +16,27 @@ struct my_data {
 	int count;
 };
 
+
+/**
+ * This function reads from a file and then writes each line of the file to a pipe
+ * The pipe is locked using a semephore so that each writer to the pipe can be sure that
+ * its data is not muddled by another writer
+ * Assumption:	this function called from a child process whose parent has both a pipe and a semephore
+ * 		the parent process has not yet closed the write end of the pipe and the semephore is 
+ * 		able to be requested by at least one of the child processes
+ * Input parameters: the pipe, the name of the file to be read, the semephore to be requested
+ * Returns: nothing, exits the child process with the code 0 when successful and 1 on file open errors
+**/
 int read_to_pipe(int my_pipe[], char* file_name, sem_t sem);
+/**
+ * This function takes an array of structs and initializes all the structs in the array to be zero
+ * Assumption: the array has already been allocated, len is greater than zero
+ * input parameters: the array to be initialized and the length of the array
+ * Returns: nothing
+ **/
 void initialize(struct my_data array[], int len);
 int find_name(struct my_data array[], char* name, int num_names);
-
+int write_name(char buff[], int num_names, struct my_data namecounts[]);
 
 int main(int argc, char* argv[]){
 	int fd[2];
@@ -61,17 +78,7 @@ int main(int argc, char* argv[]){
 	while((num = read(fd[0], buff, NAME_LENGTH)) > 0 || num_dead < (argc - 1)){
 		//check to see if anything was actually read or if the while loops is just waiting for childrent to end
 		if(num != 0){
-			if(buff[strlen(buff) - 1] == '\n'){
-				buff[strlen(buff) - 1] = '\0';
-                	}
-			int name_index = find_name(namecounts, buff, num_names);
-			if(name_index != -1){
-				namecounts[name_index].count = namecounts[name_index].count + 1;
-			} else {
-				strcpy(namecounts[num_names].name, buff);
-				namecounts[num_names].count = 1;
-				num_names++;
-			}
+			num_names = write_name(buff, num_names, namecounts);
 		}
 		//collect the exit code of the dead child process
 		if(waitpid(-1, NULL, WNOHANG) > 0){
@@ -95,6 +102,21 @@ int main(int argc, char* argv[]){
 	return 0;
 }
 
+
+int write_name(char buff[], int num_names, struct my_data namecounts[]){
+	if(buff[strlen(buff) - 1] == '\n'){
+		buff[strlen(buff) - 1] = '\0';
+	}
+	int name_index = find_name(namecounts, buff, num_names);
+	if(name_index != -1){
+		namecounts[name_index].count = namecounts[name_index].count + 1;
+		return num_names;
+	} else {
+		strcpy(namecounts[num_names].name, buff);
+		namecounts[num_names].count = 1;
+		return num_names + 1;
+	}
+}
 
 int read_to_pipe(int my_pipe[], char* file_name, sem_t sem){
         // Close the write end of the pipe
