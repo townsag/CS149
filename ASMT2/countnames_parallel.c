@@ -35,7 +35,23 @@ int read_to_pipe(int my_pipe[], char* file_name, sem_t sem);
  * Returns: nothing
  **/
 void initialize(struct my_data array[], int len);
+/**
+ * This function searches for the name in an array of my_data structs. Uses linear search
+ * Assumption: 	the array passed to the function was initialized to zero before data was added, the num_names
+ * 		is less than the length of the array
+ * Input parameters: 	the array full of name and count pairs starting from the zero index and building
+ * 			downward, the name to look for, the number of names in the array that have been added
+ * returns: the index of the name in the array (zero indexed) or -1 if the name cant be found
+ **/
 int find_name(struct my_data array[], char* name, int num_names);
+/**
+ * This function writes a name that has been read from the buffer into the struct my_data array of names and counts
+ * if the name is not already in the array, otherwise it increments the count value for that name
+ * Assumtion: the buffer holds a name that was just read, num_names is less than the length of namecounts
+ * input parameters: 	the buffer holding the cstring name, the number of names in the namecounts array, the array of
+ * 			names
+ * returns: the new count of names in the array of namecounts
+ **/
 int write_name(char buff[], int num_names, struct my_data namecounts[]);
 
 int main(int argc, char* argv[]){
