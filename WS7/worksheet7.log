@@ -1,0 +1,549 @@
+    1  sudo apt install ubuntu-desktop
+    2  sudo reboot
+    3  sudo apt install spice-vdagent
+    4  git --version
+    5  git clone https://github.com/townsag/CS149.git
+    6  pwd
+    7  ls -latr
+    8  mv CS149/ Desktop/
+    9  pwd
+   10  cd Desktop/
+   11  ls
+   12  cd CS149/
+   13  ls
+   14  git status
+   15  git branch
+   16  kate
+   17  sudo apt install kate
+   18  kate
+   19  pwd
+   20  ls -latr
+   21  cd WS3
+   22  ls -latr
+   23  vi Lab5_21.c
+   24  ls -latr
+   25  nano Lab5_21.c
+   26  vi Lab5_21.c
+   27  gcc --version
+   28  sudo apt install gcc
+   29  gcc --version
+   30  gcc -o Lab5_21 Lab5_21.c -Wall -Werror
+   31  ./Lab5_21 
+   32  vi Lab5_21.c
+   33  gcc -o Lab5_21 Lab5_21.c -Wall -Werror
+   34  ./Lab5_21 
+   35  vi Lab5_21.c
+   36  gcc -o Lab5_21 Lab5_21.c -Wall -Werror
+   37  ./Lab5_21 
+   38  vi Lab5_21.c
+   39  gcc -o Lab5_21 Lab5_21.c -Wall -Werror
+   40  ./Lab5_21 
+   41  vi Lab5_21.c
+   42  gcc -o Lab5_21 Lab5_21.c -Wall -Werror
+   43  vi Lab5_21.c
+   44  gcc -o Lab5_21 Lab5_21.c -Wall -Werror
+   45  ./Lab5_21 
+   46  vi Lab5_21.c
+   47  gcc -o Lab5_21 Lab5_21.c -Wall -Werror
+   48  ./Lab5_21 
+   49  vi Lab5_21.c
+   50  gcc -o Lab5_21 Lab5_21.c -Wall -Werror
+   51  ./Lab5_21 
+   52  vi Lab5_21.c
+   53  gcc -o Lab5_21 Lab5_21.c -Wall -Werror
+   54  ./Lab5_21 
+   55  vi Lab5_21.c
+   56  gcc -o Lab5_21 Lab5_21.c -Wall -Werror
+   57  ./Lab5_21 
+   58  vi Lab5_21.c
+   59  gcc -o Lab5_21 Lab5_21.c -Wall -Werror
+   60  ./Lab5_21 
+   61  cat Lab5_21.c
+   62  pwd
+   63  git status
+   64  git add Lab5_21.c
+   65  git commit -m "finished lab 5.21"
+   66  git config --global user.email "townsag@gmail.com"
+   67  git config --glibal user.name "Andrew Townsend"
+   68  git config --global user.name "Andrew Townsend"
+   69  git commit -m "finished lab 5.21"
+   70  git push origin main
+   71  vi Lab5_22.c
+   72  gcc -o Lab5_22 Lab5_22.c
+   73  vi Lab5_22.c
+   74  gcc -o Lab5_22 Lab5_22.c
+   75  ./Lab5_22
+   76  cat Lab5_22.c
+   77  vi Lab5_22.c
+   78  git status
+   79  git add Lab5_22.c
+   80  git commit -m "finished lab 5.22"
+   81  git push origin main
+   82  vi Lab5_23.c
+   83  gcc -o Lab5_23 Lab5_23.c
+   84  vi Lab5_23.c
+   85  gcc -o Lab5_23 Lab5_23.c
+   86  vi Lab5_23.c
+   87  gcc -o Lab5_23 Lab5_23.c
+   88  ./Lab5_23
+   89  vi Lab5_23.c
+   90  gcc -o Lab5_23 Lab5_23.c
+   91  ./Lab5_23
+   92  cat Lab5_23.c
+   93  git status
+   94  git add Lab5_23.c
+   95  git commit -m "finished lab 5.32"
+   96  git push origin main
+   97  pwd
+   98  cd Desktop/CS149/WS3/
+   99  pwd
+  100  ls
+  101  wget https://github.com/torvalds/linux/archive/master.zip
+  102  unzip master.zip 
+  103  cd linux-master/
+  104  pwd
+  105  alias l='ls -latr'
+  106  l
+  107  find . -name mem.c
+  108  find . -name mem.c | xargs head
+  109  find . -name mem.c | xargs grep 86
+  110  cd ..
+  111  pwd
+  112  history > worksheet3.log
+  113  head worksheet3.log 
+  114  pwd
+  115  git status
+  116  git add worksheet3.log 
+  117  git commit -m "finished the log worksheet"
+  118  git push origin main
+  119  kate
+  120  pwd
+  121  cd Desktop/CS149/WS3/
+  122  vi Lab5_22.c
+  123  pwd
+  124  pstree
+  125  ps -a -f -x
+  126  ps -a -f -x |more
+  127  top
+  128  man kill
+  129  echo $
+  130  echo $?
+  131  echo $$
+  132  pwd
+  133  cd Desktop/CS149/WS4/
+  134  ls
+  135  history > worksheet4.log
+  136  wget http://www.apuebook.com/src.3e.tar.gz
+  137  pwd
+  138  gunzip src.3e.tar.gz 
+  139  tar xvf src.3e.tar 
+  140  ls
+  141  cd apue.3e/
+  142  cd proc
+  143  ls
+  144  make all
+  145  sudo apt-get install make
+  146  make all
+  147  ls
+  148  ./fork1
+  149  ./fork2
+  150  ./fork1
+  151  cd ~/Desktop
+  152  ls
+  153  cd CS149/
+  154  cd WS4
+  155  ls
+  156  git status
+  157  git add worksheet4.log 
+  158  git commit -m "adding the log of console commands file"
+  159  git pu sh origin main
+  160  git push origin main
+  161  pwd
+  162  cd Desktop/CS149/test/
+  163  ls
+  164  cat names3.txt 
+  165  pwd
+  166  vi parallel_test
+  167  vi parallel_test.c 
+  168  gcc -0 parallel_test parallel_test.c -Wall -Werror
+  169  gcc -o parallel_test parallel_test.c -Wall -Werror
+  170  vi parallel_test.c 
+  171  gcc -o parallel_test parallel_test.c -Wall -Werror
+  172  vi parallel_test.c 
+  173  gcc -o parallel_test parallel_test.c -Wall -Werror
+  174  ./parallel_test names1.txt names2.txt 
+  175  vi names1.txt 
+  176  vi names2.txt 
+  177  ./parallel_test names1.txt names2.txt 
+  178  vi names1.txt 
+  179  ./parallel_test names1.txt names2.txt 
+  180  vi parallel_test.c 
+  181  gcc -o parallel_test parallel_test.c -Wall -Werror
+  182  ./parallel_test names1.txt names2.txt 
+  183  vi parallel_test.c 
+  184  git status
+  185  git add parallel_test.c
+  186  git commit -m "edited test to handle lines instead of chars"
+  187  git push origin main
+  188  vi parallel_test.c
+  189  gcc -o parallel_test parallel_test.c -Wall -Werror
+  190  vi parallel_test.c
+  191  gcc -o parallel_test parallel_test.c -Wall -Werror
+  192  vi parallel_test.c
+  193  gcc -o parallel_test parallel_test.c -Wall -Werror
+  194  ./parallel_test names1.txt names2.txt 
+  195  git status
+  196  git add parallel_test.c 
+  197  git commit -m "removed child process code to a function"
+  198  git push origin main
+  199  vi parallel_test.c
+  200  gcc -o parallel_test parallel_test.c -Wall -Werror
+  201  ./parallel_test names1.txt names2.txt 
+  202  cat names1.txt 
+  203  cat names2.txt 
+  204  git status
+  205  git add parallel_test.c 
+  206  git commit -m "added checking for blank lines"
+  207  git push origin main
+  208  vi parallel_test.c
+  209  gcc -o parallel_test parallel_test.c -Wall -Werror
+  210  vi parallel_test.c
+  211  gcc -o parallel_test parallel_test.c -Wall -Werror
+  212  vi parallel_test.c
+  213  gcc -o parallel_test parallel_test.c -Wall -Werror
+  214  vi parallel_test.c
+  215  gcc -o parallel_test parallel_test.c -Wall -Werror
+  216  vi parallel_test.c
+  217  gcc -o parallel_test parallel_test.c -Wall -Werror
+  218  vi parallel_test.c
+  219  gcc -o parallel_test parallel_test.c -Wall -Werror
+  220  vi parallel_test.c
+  221  gcc -o parallel_test parallel_test.c -Wall -Werror
+  222  vi parallel_test.c
+  223  gcc -o parallel_test parallel_test.c -Wall -Werror
+  224  vi parallel_test.c
+  225  gcc -o parallel_test parallel_test.c -Wall -Werror
+  226  vi parallel_test.c
+  227  gcc -o parallel_test parallel_test.c -Wall -Werror
+  228  vi parallel_test.c
+  229  gcc -o parallel_test parallel_test.c -Wall -Werror
+  230  vi parallel_test.c
+  231  gcc -o parallel_test parallel_test.c -Wall -Werror
+  232  vi parallel_test.c
+  233  gcc -o parallel_test parallel_test.c -Wall -Werror
+  234  vi parallel_test.c
+  235  gcc -o parallel_test parallel_test.c -Wall -Werror
+  236  git status
+  237  git add parallel_test.c 
+  238  git commit -m "added a struct and code to add things to array of structs"
+  239  git push origin main
+  240  vi parallel_test.c
+  241  git commit -m "added a struct and code to add things to array of structs"
+  242  gcc -o parallel_test parallel_test.c -Wall -Werror
+  243  ./parallel_test names1.txt names2.txt 
+  244  vi parallel_test.c
+  245  gcc -o parallel_test parallel_test.c -Wall -Werror
+  246  ./parallel_test names1.txt names2.txt 
+  247  vi parallel_test.c
+  248  gcc -o parallel_test parallel_test.c -Wall -Werror
+  249  vi parallel_test.c
+  250  gcc -o parallel_test parallel_test.c -Wall -Werror
+  251  ./parallel_test names1.txt names2.txt 
+  252  vi parallel_test.c
+  253  gcc -o parallel_test parallel_test.c -Wall -Werror
+  254  ./parallel_test names1.txt names2.txt 
+  255  vi parallel_test.c
+  256  gcc -o parallel_test parallel_test.c -Wall -Werror
+  257  ./parallel_test names1.txt names2.txt 
+  258  git status
+  259  git add parallel_test.c 
+  260  git commit
+  261  git commit -m "asdf"
+  262  git push origin main
+  263  vi parallel_test.c
+  264  gcc -o parallel_test parallel_test.c -Wall -Werror
+  265  vi parallel_test.c
+  266  gcc -o parallel_test parallel_test.c -Wall -Werror
+  267  ./parallel_test names1.txt names2.txt 
+  268  vi parallel_test.c
+  269  gcc -o parallel_test parallel_test.c -Wall -Werror
+  270  ./parallel_test names1.txt names2.txt 
+  271  vi parallel_test.c
+  272  git status
+  273  git add parallel_test.c
+  274  git commit -m "asdf"
+  275  git push origin main
+  276  vi parallel_test.c
+  277  git status
+  278  pwd
+  279  cd Desktop/CS149/test/
+  280  vi parallel_test.c
+  281  gcc -o parallel_test parallel_test.c -Wall -Werror
+  282  vi parallel_test.c
+  283  gcc -o parallel_test parallel_test.c -Wall -Werror
+  284  vi parallel_test.c
+  285  gcc -o parallel_test parallel_test.c -Wall -Werror
+  286  ./parallel_test names1.txt names2.txt 
+  287  vi parallel_test.c
+  288  gcc -o parallel_test parallel_test.c -Wall -Werror
+  289  ./parallel_test names1.txt names2.txt 
+  290  vi parallel_test.c
+  291  gcc -o parallel_test parallel_test.c -Wall -Werror
+  292  ./parallel_test names1.txt names2.txt 
+  293  vi parallel_test.c
+  294  gcc -o parallel_test parallel_test.c -Wall -Werror
+  295  ./parallel_test names1.txt names2.txt 
+  296  vi parallel_test.c
+  297  git status
+  298  git add parallel_test.c
+  299  git commit -m "fixed semephore access issue"
+  300  git push origin main
+  301  ./parallel_test names1.txt names2.txt names2.txt
+  302  vi parallel_test.c
+  303  gcc -o parallel_test parallel_test.c -Wall -Werror
+  304  vi parallel_test.c
+  305  gcc -o parallel_test parallel_test.c -Wall -Werror
+  306  ./parallel_test names1.txt names2.txt names2.txt
+  307  vi parallel_test.c
+  308  gcc -o parallel_test parallel_test.c -Wall -Werror
+  309  ./parallel_test names1.txt names2.txt names2.txt
+  310  git status
+  311  git add parallel_test.c
+  312  git commit -m "changed output format, added read checking from the pipe"
+  313  git push origin main
+  314  git status
+  315  vi parallel_test.c
+  316  gcc -o parallel_test parallel_test.c -Wall -Werror
+  317  ./parallel_test names1.txt names2.txt names2.txt
+  318  vi names1.txt 
+  319  vi names2.txt 
+  320  ./parallel_test names1.txt names2.txt names2.txt
+  321  vi parallel_test.c
+  322  man cp
+  323  cp parallel_test.c ../ASMT2
+  324  ls
+  325  cd ../ASMT2/
+  326  ls
+  327  vi parallel_test.c 
+  328  mv ./parallel_test.c ./countnames_parallel.c 
+  329  ls
+  330  vi countnames_parallel.c 
+  331  ls
+  332  vi names2.txt
+  333  vi names3.txt
+  334  man gcc
+  335  gcc -o countnames_parallel countnames_parallel.c -Wall -Werror
+  336  ./countnames_parallel names2.txt names3.txt 
+  337  ls
+  338  rm countname_parallel 
+  339  ls
+  340  git status
+  341  git add countnames_parallel.c
+  342  git commit -m "cleaned up comments"
+  343  git push origin main
+  344  git status
+  345  git add ../test/parallel_test.c
+  346  git status
+  347  git commit -m "copied over to asmnt folder"
+  348  git push origin main
+  349  cd ..
+  350  cd ASMT1
+  351  cat countnames.c 
+  352  pwd
+  353  cd Desktop/CS149/ASMT2/
+  354  ls
+  355  vi countnames_parallel.c 
+  356  gcc -o countnames_parallel countnames_parallel.c -Wall -Werror
+  357  vi countnames_parallel.c 
+  358  gcc -o countnames_parallel countnames_parallel.c -Wall -Werror
+  359  vi countnames_parallel.c 
+  360  gcc -o countnames_parallel countnames_parallel.c -Wall -Werror
+  361  ./countnames_parallel names2.txt names3.txt 
+  362  cat names2.txt 
+  363  cat names3.txt 
+  364  vi countnames_parallel.c 
+  365  git status
+  366  git add countnames_parallel.c
+  367  git commit -m "added comments"
+  368  git push origin main
+  369  vi countnames_parallel.c 
+  370  git add countnames_parallel.c
+  371  git commit -m "added comments"
+  372  git push origin main
+  373  pwd
+  374  cd ..
+  375  ls
+  376  mkdir WS5
+  377  ls
+  378  cd WS5
+  379  pwd
+  380  vi Lab5_26.c
+  381  ls
+  382  vi Lab6_28.c
+  383  ls
+  384  git add Lab5_26.c Lab6_28.c 
+  385  git status
+  386  git commit -m "answers to WS5 labs"
+  387  git push origin main
+  388  pwd
+  389  ls
+  390  vi ws5.c
+  391  gcc -o ws5 ws5.c -Wall -Werror
+  392  ./ws5 
+  393  git add ws5.c
+  394  git status
+  395  git commit -m "ws5"
+  396  git push origin main
+  397  pwd
+  398  ls
+  399  cd Desktop/CS149/
+  400  pwd
+  401  ls
+  402  mkdir WS6
+  403  cd WS6
+  404  vi Lab5_28.c
+  405  gcc -o Lab5_28 Lab5_28.c -Wall -Werror
+  406  ./Lab5_28 
+  407  vi Lab5_28.c
+  408  gcc -o Lab5_28 Lab5_28.c -Wall -Werror
+  409  ./Lab5_28 
+  410  vi Lab5_28.c
+  411  gcc -o Lab5_28 Lab5_28.c -Wall -Werror
+  412  vi Lab5_28.c
+  413  gcc -o Lab5_28 Lab5_28.c -Wall -Werror
+  414  ./Lab5_28 
+  415  vi Lab5_28.c
+  416  git status
+  417  git add Lab5_28.c
+  418  git commit -m "finished lab 5.28"
+  419  git status
+  420  git push origin main
+  421  pwd
+  422  vi Lab6_35.c
+  423  gcc -o Lab6_35 Lab6_35.c -Wall -Werror
+  424  vi Lab6_35.c
+  425  gcc -o Lab6_35 Lab6_35.c -Wall -Werror
+  426  vi Lab6_35.c
+  427  gcc -o Lab6_35 Lab6_35.c -Wall -Werror
+  428  ./Lab6_35 
+  429  vi Lab6_35.c
+  430  gcc -o Lab6_35 Lab6_35.c -Wall -Werror
+  431  vi Lab6_35.c
+  432  gcc -o Lab6_35 Lab6_35.c -Wall -Werror
+  433  vi Lab6_35.c
+  434  gcc -o Lab6_35 Lab6_35.c -Wall -Werror
+  435  vi Lab6_35.c
+  436  gcc -o Lab6_35 Lab6_35.c -Wall -Werror
+  437  vi Lab6_35.c
+  438  ./Lab6_35 
+  439  git status
+  440  git add Lab6_35.c
+  441  git commit -m "finished lab 6.35"
+  442  git push origin main
+  443  pwd
+  444  cd Desktop/
+  445  vi test.c
+  446  gcc -o test test.c 
+  447  vi test.c
+  448  gcc -o test test.c 
+  449  ./test 
+  450  vi test.c
+  451  pwd
+  452  cd Desktop/CS149/
+  453  ls
+  454  cd ASMT2
+  455  ls
+  456  vi countnames_parallel.c
+  457  git status
+  458  gcc -o countnames_parallel countnames_parallel.c -Wall -Werror
+  459  ./countnames_parallel names.txt
+  460  vi countnames_parallel.c
+  461  gcc -o countnames_parallel countnames_parallel.c -Wall -Werror
+  462  pwd
+  463  cd Desktop/CS149/ASMT2
+  464  ls
+  465  vi names_given1.txt
+  466  vi names_given2.txt
+  467  vi names_given3.txt
+  468  ls
+  469  ./countnames_parallel names_given1.txt names_given2.txt names_given3.txt
+  470  cat names_given1.txt names_given2.txt names_given3.txt | sort | uniq -c
+  471  ./countnames_parallel names_given1.txt names_given2.txt names_given3.txt
+  472  cat names_given1.txt names_given2.txt names_given3.txt | sort | uniq -c |grep PATR
+  473  pwd
+  474  ls
+  475  cd Desktop/CS149/
+  476  mkdir WS7
+  477  vi Lab6_24.c
+  478  git status
+  479  ls
+  480  mv Lab6_24.c WS7
+  481  ls
+  482  cd WS7
+  483  git status
+  484  pwd
+  485  ls
+  486  git add Lab6_24.c 
+  487  git commit -m "finished lab 6.24"
+  488  git push origin main
+  489  ls
+  490  git status
+  491  pwd
+  492  cd Desktop/CS149/WS7/
+  493  ls
+  494  vi lseek_example.c
+  495  gcc -o lseek_example lseek_example.c 
+  496  ./lseek_example 
+  497  vi lseek_example.c
+  498  vi start.txt
+  499  ./lseek_example 
+  500  ls
+  501  cat end.txt
+  502  rm end.txt
+  503  ls
+  504  clear
+  505  ls
+  506  vi lseek_example.c 
+  507  cat start.txt 
+  508  ./lseek_example 
+  509  ls
+  510  cat end.txt
+  511  cat stat.txt
+  512  cat start.txt 
+  513  vi lseek_example.c 
+  514  gcc -o lseek_example lseek_example.c 
+  515  ls
+  516  rm end.txt 
+  517  ./lseek_example 
+  518  ls
+  519  cat end.txt 
+  520  cat start.txt 
+  521  vi lseek_example.c 
+  522  rm end.txt 
+  523  gcc -o lseek_example lseek_example.c 
+  524  ./lseek_example 
+  525  cat end.txt 
+  526  vi lseek_example.c 
+  527  gcc -o lseek_example lseek_example.c 
+  528  rm end.txt 
+  529  ls
+  530  ./lseek_example 
+  531  cat end.txt 
+  532  git statys
+  533  git status
+  534  git add lseek_example.c
+  535  git commit -m "edited the lseek_example.c file"
+  536  git push origin main
+  537  ls | wc
+  538  clear
+  539  ls |wc
+  540  ls | sort
+  541  ls | sort |wc
+  542  ls -latr /bin/
+  543  ls -latr /bin/ >a.out
+  544  ls
+  545  cat a.out | more
+  546  strace ls
+  547  du -sh
+  548  df -i
+  549  history > worksheet7.log
