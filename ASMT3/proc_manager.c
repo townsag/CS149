@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
-
+#include <stdlib.h>
+#include <unistd.h>
 
 #define LINE_LENGTH 30
 #define MAX_COMMANDS 100
@@ -29,13 +30,15 @@ int main(int argc, char* argv[]){
 		num_commands++;
 	}
 
+	pid_t pid;
 	for(int i = 0; i < num_commands; i++){
 		pid = fork();
 		if(pid == 0){	//in the child process
 			printf("%s, %d\n", commands[i], getpid());
 			exit(0);
 		} else if (pid < 0){
-			fprintf(stde
+			fprintf(stderr,"fork failed\n");
+		}
 	
 	}
 
