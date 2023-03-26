@@ -53,12 +53,14 @@ int main(int argc, char* argv[]){
 			buffer[strlen(buffer) - 1] = '\0';
 		}
 
-		char* temp_new_str = calloc(strlen(buffer) + 1, sizeof(char));
-		strcpy(temp_new_str, buffer);
-		num_commands++;
+		if(buffer[0] != '\0'){
+			char* temp_new_str = calloc(strlen(buffer) + 1, sizeof(char));
+			strcpy(temp_new_str, buffer);
+			num_commands++;
 
-		commands = realloc(commands, num_commands * sizeof(char*)); // resize array of strings
-		commands[num_commands - 1] = temp_new_str;
+			commands = realloc(commands, num_commands * sizeof(char*)); // resize array of strings
+			commands[num_commands - 1] = temp_new_str;
+		}
 	}
 
 	pid_t pid;
