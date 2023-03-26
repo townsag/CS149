@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/wait.h>
 
 #define LINE_LENGTH 30
 #define MAX_COMMANDS 100
@@ -21,7 +22,7 @@ int count_tokens(char* command, char delim){
 
 void write_exit_code(pid_t child_pid, int exit_code){
 	char* out_file_name_str = calloc(20, sizeof(char));                
-	sprintf(out_file_name_str, "%d.txt", child_pid);               
+	sprintf(out_file_name_str, "%d.err", child_pid);               
 	int out_file_desc = open(out_file_name_str, O_WRONLY | O_APPEND, 0777);
 	if(out_file_desc == -1){
 		perror("failed to open\n");
@@ -44,6 +45,7 @@ void write_exit_code(pid_t child_pid, int exit_code){
 int main(int argc, char* argv[]){
 	char** commands = NULL;
 	int num_commands = 0;
+	int num_children = 0;
 
 	char buffer[LINE_LENGTH];
 	while(fgets(buffer, LINE_LENGTH, stdin) != NULL){
@@ -78,11 +80,11 @@ int main(int argc, char* argv[]){
 			free(err_file_name_str);
 			
 			printf("Starting command %i: child %d pid of parent %d\n", i, child_pid, parent_pid);
+			fflush(stdout);			
+			//fprintf(stderr, "printing iside: %d\n", child_pid);
 						
-			fprintf(stderr, "printing iside: %d\n", child_pid);
-						
-			printf("1, should be commands: %s\n",commands[i]);
-			fflush(stdout);	
+			//printf("1, should be commands: %s\n",commands[i]);
+			//fflush(stdout);	
 
 			//seperate the string in commands[i] into an array of strings
 			char* temp_command = calloc(strlen(commands[i]) + 1, sizeof(char));
@@ -98,7 +100,11 @@ int main(int argc, char* argv[]){
 			}
 			args[count++] = NULL;
 			
-			
+			execvp(args[0], args);
+			printf("couldn't execute: %s", args[0]);
+			exit(127);
+
+			/*
 			printf("2, count: %d, num_tokens: %d\n", count, num_tokens);
 			fflush(stdout);
 			//print out all the strings in args
@@ -112,16 +118,32 @@ int main(int argc, char* argv[]){
 
 			printf("3, last print: %s, %d\n", commands[i], getpid());
 			fflush(stdout);
-
+			*/
 			free(args);
 			free(temp_command);
 			exit(0);
 		} else if (pid < 0){
 			fprintf(stderr,"fork failed\n");
+		} else {
+			num_children++;
 		}
-	
 	}
 	
+	int status;
+	pid_t exited_pid;
+	
+	while(num_children > 0){
+		exited_pid = waitpid(-1, &status, WNOHANG);
+        	if (exited_pid == -1) { // check for errors
+            		perror("waitpid");
+        	} else if (exited_pid > 0) { // child process finished
+            		num_children--;
+			write_exit_code(exited_pid, WEXITSTATUS(status));
+        	}
+    	}
+
+
+
 	for(int i = 0; i < num_commands; i++){
 		free(commands[i]);
 	}
