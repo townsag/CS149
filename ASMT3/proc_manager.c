@@ -16,6 +16,17 @@ void initialize_array(char commands[MAX_COMMANDS][LINE_LENGTH]){
 	}
 }
 
+int count_tokens(char* command, char delim){
+	int count = 0;
+	if(strlen(command) > 0){ count = 1;}
+	for(int i = 0; i < strlen(command), i++){
+		if(command[i] == delim){
+			count++;
+		}
+	}
+	return count;
+}
+
 
 int main(int argc, char* argv[]){
 	char commands[MAX_COMMANDS][LINE_LENGTH];
@@ -37,10 +48,20 @@ int main(int argc, char* argv[]){
 		if(pid == 0){	//in the child process
 			//change the stdout and stderr files to be pid.out and pid.err
 			pid_t child_pid = getpid();
-			char file_name_str[20];
+			char* file_name_str = calloc(20, sizeof(char));
 		        sprintf(file_name_str, "%d.txt", child_pid);	
 			int out_file_desc = open(file_name_str, O_RDWR | O_CREAT | O_APPEND, 0777);
+			free(file_name_str);
 			dup2(out_file_desc, STDOUT_FILENO);
+
+			//seperate the string in commands[i] into an array of strings
+
+	
+
+
+
+
+
 			printf("%s, %d\n", commands[i], getpid());
 			exit(0);
 		} else if (pid < 0){
