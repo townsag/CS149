@@ -20,7 +20,7 @@ int count_tokens(char* command, char delim){
 	return count;
 }
 
-void write_exit_code(pid_t child_pid, int exit_code){
+void write_exit_code(pid_t child_pid, int status){
 	char* out_file_name_str = calloc(20, sizeof(char));                
 	sprintf(out_file_name_str, "%d.err", child_pid);               
 	int out_file_desc = open(out_file_name_str, O_WRONLY | O_APPEND, 0777);
@@ -28,15 +28,25 @@ void write_exit_code(pid_t child_pid, int exit_code){
 		perror("failed to open\n");
 		return;
 	}
-
-	char buffer[40];
-	sprintf(buffer, "Exited with exitcode = %d\n", exit_code); 
-	int len_written = write(out_file_desc, buffer, strlen(buffer));
-	if(len_written == -1){
-		perror("failed to print\n");
-		return;
-	}
 	
+	if(WIFSIGNALED(status)){
+		char buffer[40];
+		sprintf(buffer, "Killed with signal %d\n", WTERMSIG(status));
+		int len_written = write(out_file_desc, buffer, strlen(buffer));
+                if(len_written == -1){
+                        perror("failed to print\n");
+                        return;
+                }
+
+	} else {
+		char buffer[40];
+		sprintf(buffer, "Exited with exitcode = %d\n", WEXITSTATUS(status)); 
+		int len_written = write(out_file_desc, buffer, strlen(buffer));
+		if(len_written == -1){
+			perror("failed to print\n");
+			return;
+		}
+	}
 	free(out_file_name_str);
 	close(out_file_desc);
 }
@@ -104,7 +114,7 @@ int main(int argc, char* argv[]){
 			
 			execvp(args[0], args);
 			printf("couldn't execute: %s", args[0]);
-			exit(127);
+			exit(2);
 
 			/*
 			printf("2, count: %d, num_tokens: %d\n", count, num_tokens);
@@ -140,7 +150,8 @@ int main(int argc, char* argv[]){
             		perror("waitpid");
         	} else if (exited_pid > 0) { // child process finished
             		num_children--;
-			write_exit_code(exited_pid, WEXITSTATUS(status));
+			write_exit_code(exited_pid, status);
+			//write_exit_code(exited_pid, WEXITSTATUS(status));
         	}
     	}
 
