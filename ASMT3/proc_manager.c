@@ -8,7 +8,13 @@
 #define LINE_LENGTH 30
 #define MAX_COMMANDS 100
 
-
+/**
+ * This function returns the number of tokens that a string can be spit into
+ * Assumption: a non empty string with no delimeters in it is a single token. the delimeter is always followed by at
+ * 		least one non delimeter character
+ * Input parameters: command: a string representing a command, delim: a single character to split the string by
+ * Returns: an integer count of the number of tokens the string will be split into
+**/
 int count_tokens(char* command, char delim){
 	int count = 0;
 	if(strlen(command) > 0){ count = 1;}
@@ -20,6 +26,13 @@ int count_tokens(char* command, char delim){
 	return count;
 }
 
+/**
+ * This function writes the result of a command to the apropriate error file
+ * Assumption: if the file already exists, this process will have permission to edit it
+ * Input parameters: nchild_pid: the pid of the process that just returned, status: the 32 bit encoding for the metadata
+ * 			of the process
+ * Returns: void, writes to a file instead
+**/
 void write_exit_code(pid_t child_pid, int status){
 	char* out_file_name_str = calloc(20, sizeof(char));                
 	sprintf(out_file_name_str, "%d.err", child_pid);               
@@ -52,6 +65,14 @@ void write_exit_code(pid_t child_pid, int status){
 }
 
 
+/**
+ * This function reads in a list of commands then spawns processes to each execute a command. Finally it collects the 
+ * results of each command and writes the results to a file
+ * Assumption: the commands are in the format "Command\nCommand\n.....Command\n^D", this is closest to the input
+ * 		format of the example
+ * Input parameters: not used
+ * Returns: writes to a number of files
+**/
 int main(int argc, char* argv[]){
 	char** commands = NULL;
 	int num_commands = 0;
