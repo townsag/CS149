@@ -24,9 +24,14 @@ int main(void){
 		userString[strlen(userString) - 1] = '\0';
 	}
 
-	printf("userchar: %c\n", userChar);
-	printf("userSentance: %s\n", userString);
-	printf("%d\n", CalcNumCharacters(userString, userChar));
+	int count = CalcNumCharacters(userString, userChar);
+
+	if(count == 1){
+		printf("1 %c\n", userChar);
+	} else {
+		printf("%d %c's\n", count, userChar);
+	}
+
 	return 0;
 
 
