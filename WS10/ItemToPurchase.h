@@ -11,5 +11,6 @@ struct ItemToPurchase {
 
 void MakeItemBlank(struct ItemToPurchase* item);
 void PrintItemCost(struct ItemToPurchase* item);
+void ReadInItem(struct ItemToPurchase* item);
 
 #endif
