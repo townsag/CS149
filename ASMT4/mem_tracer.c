@@ -1,14 +1,18 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-//#include <unistd.h>
-//#include <fcntl.h>
+#include <unistd.h>
+#include <fcntl.h>
 //#include <sys/wait.h>
 
 #include "from_template.h"
 
 #define INITIAL_BUFFER_SIZE 10;
 
+//This function reads in a line from a file (or stdin) and then returns a pointer to that input
+//because this function allocates memory, it is the job of the caller to deallocate that memory
+//this function makes no assumtions about the size of the line, only that the input file is reachable
+//this function returns a NULL pointer if there is some sort of failure or if the EOF is reached
 char* read_and_allocate(FILE* input){
 	
 	PUSH_TRACE("read_and_allocate");
@@ -63,6 +67,9 @@ struct my_node{
 	struct my_node * next;
 };
 
+//this function recursively frees a linked list
+//this function makes the assumption that the head of the linked list is not a null pointer
+//this function does not return anything
 void free_list(struct my_node* head){
 	PUSH_TRACE("free_list");
 	
@@ -91,6 +98,9 @@ void free_list(struct my_node* head){
 	POP_TRACE();
 }
 
+//this function prints the contents of a linked list
+//this function makes very few assumptions, for example it can also print a null pointer head linked list
+//this function does not return anything
 void print_list(struct my_node* head){
 	PUSH_TRACE("print_list");
 
@@ -108,8 +118,17 @@ void print_list(struct my_node* head){
 }
 
 
+//This is the main function in which I call all the other functions
+//this function is used to allocate memory for the list of commands and the iteratively call the function which
+//returns a pointer to new memory holding a command
+//This function is responsible for calling the funtions which deallocate memory or for deallocating memory itself
+//this function does not return anything but it does print a number of times
 int main(int argc, char* argv[]){
 	PUSH_TRACE("main");
+
+	int out_file_desc = open("memtrace.out", O_RDWR | O_CREAT | O_APPEND, 0777);
+	dup2(out_file_desc, STDOUT_FILENO);
+
 	char** commands = NULL;
 	int num_commands = 0;
 	int commands_size = INITIAL_BUFFER_SIZE;
