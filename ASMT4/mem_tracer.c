@@ -50,13 +50,35 @@ char* read_and_allocate(FILE* input){
 	return buffer;
 }
 
-//struct my_node 
+struct my_node{
+	char* line;
+	int line_index;
+	struct my_node * next;
+};
+
+void free_list(struct my_node* head){
+	temp = head->next;
+	free(head);
+	if(temp != NULL){
+		free_list(temp);
+	}
+}
+
+void print_list(struct my_node* head){
+	printf("Line %d: %s\n", head->line_index, head->line);
+	if(head->next != NULL){
+		print_list(head->next);
+	}
+}
 
 
 int main(int argc, char* argv[]){
 	char** commands = NULL;
 	int num_commands = 0;
 	int commands_size = INITIAL_BUFFER_SIZE;
+
+	struct my_node* head = (struct my_node*) calloc(1, sizeof(struct my_node));
+	struct my_node* tail = head;
 
 	commands = (char**) calloc(commands_size, sizeof(char*));
 	if(commands == NULL){
@@ -77,14 +99,26 @@ int main(int argc, char* argv[]){
 				for(int i = 0; i < num_commands; i++){
 					free(commands[i]);
 				}
+				free(temp_str);
 				free(commands);
-				if(temp_str != NULL){
-					free(temp_str);
-				}
+				return 1;
 			}
 			commands = temp;
 		}
+
 		commands[num_commands++] = temp_str;
+		
+		//add the line to the linked list
+		//allocate new memory for the string pointed to by each node
+		//should be simpler when deallocating
+		temp_node = (struct my_node *)calloc(1, sizeof(struct my_node));
+		temp_node->line = (char *)calloc(strlen(temp_str) + 1, sizeof(char));
+		strcpy(temp_node->line, temp_str);
+		temp_node->line_index = num_commands;
+		temp_node->next = NULL;
+		tail->next = temp_node;
+		tail = temp_node;
+
 		printf("you entered: %s\n", commands[num_commands - 1]);
 		temp_str = NULL;
 	}
