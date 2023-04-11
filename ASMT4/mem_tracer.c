@@ -5,12 +5,17 @@
 //#include <fcntl.h>
 //#include <sys/wait.h>
 
+#include "from_template.h"
+
 #define INITIAL_BUFFER_SIZE 10;
 
 char* read_and_allocate(FILE* input){
+	
+	PUSH_TRACE("read_and_allocate");
+
 	//printf("entering RAA\n");
 	size_t buffer_size = INITIAL_BUFFER_SIZE;
-	char* buffer = (char *)calloc(buffer_size, sizeof(char));
+	char* buffer = (char *)malloc(buffer_size*sizeof(char));
 
 	if(buffer == NULL){
 		printf("failed to allocate buffer\n");
@@ -47,6 +52,7 @@ char* read_and_allocate(FILE* input){
 	}
 		
 	//printf("leaving RAA\n");
+	POP_TRACE();
 
 	return buffer;
 }
@@ -58,32 +64,61 @@ struct my_node{
 };
 
 void free_list(struct my_node* head){
-	struct my_node* temp = head->next;
+	PUSH_TRACE("free_list");
+	
+	/*
+	struct my_node* temp = head;
+	struct my_node* temp_look_ahead = head->next;
+
+	while(temp != NULL){
+		free(temp->line);
+		free(temp);
+		temp = temp_look_ahead;
+		if(temp != NULL){
+			temp_look_ahead = temp->next;
+		}
+	}
+	
+	POP_TRACE();	
+	*/
+	
+	struct my_node * temp = head->next;
 	free(head->line);
 	free(head);
 	if(temp != NULL){
 		free_list(temp);
 	}
+	POP_TRACE();
 }
 
 void print_list(struct my_node* head){
-	printf("Line %d: %s\n", head->line_index, head->line);
-	if(head->next != NULL){
-		print_list(head->next);
+	PUSH_TRACE("print_list");
+
+	struct my_node* temp = head;
+        while(temp != NULL){
+		printf("Line %d: %s\n", temp->line_index, temp->line);
+		temp = temp->next;
 	}
+
+	//printf("Line %d: %s\n", head->line_index, head->line);
+	//if(head->next != NULL){
+	//	print_list(head->next);
+	//}
+	POP_TRACE();
 }
 
 
 int main(int argc, char* argv[]){
+	PUSH_TRACE("main");
 	char** commands = NULL;
 	int num_commands = 0;
 	int commands_size = INITIAL_BUFFER_SIZE;
 
-	struct my_node* head = (struct my_node*) calloc(1, sizeof(struct my_node));
+	struct my_node* head = (struct my_node*) malloc(sizeof(struct my_node));
 	head->next = NULL;
 	struct my_node* tail = head;
 
-	commands = (char**) calloc(commands_size, sizeof(char*));
+	commands = (char**) malloc(commands_size * sizeof(char*));
 	if(commands == NULL){
 		printf("failed to allocate commands\n");
 		free_list(head);
@@ -114,8 +149,8 @@ int main(int argc, char* argv[]){
 		//add the line to the linked list
                 //allocate new memory for the string pointed to by each node
                 //should be simpler when deallocating
-                struct my_node* temp_node = (struct my_node *)calloc(1, sizeof(struct my_node));
-                temp_node->line = (char *)calloc(strlen(temp_str) + 1, sizeof(char));
+                struct my_node* temp_node = (struct my_node *)malloc(1* sizeof(struct my_node));
+                temp_node->line = (char *)malloc((strlen(temp_str) + 1)* sizeof(char));
                 strcpy(temp_node->line, temp_str);
                 temp_node->line_index = num_commands;
                 temp_node->next = NULL;
@@ -148,6 +183,8 @@ int main(int argc, char* argv[]){
 	}
 	free(commands);
 	free_list(head);
+	
+	POP_TRACE();
 
 	return 0;
 }
