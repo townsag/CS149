@@ -16,11 +16,12 @@ char* read_and_allocate(FILE* input){
 		printf("failed to allocate buffer\n");
 		return NULL;
 	}
-
+	
 	char c;
 	size_t index_to_write = 0;
-
-	while((c = fgetc(input)) != '\n' && c!= EOF){
+	
+	c = fgetc(input);
+	while(c != '\n' && !feof(input)){
 		//check to see if the buffer is full
 		if(index_to_write == buffer_size - 2){	//leave room for null at end of string
 			//resize the buffer
@@ -34,11 +35,12 @@ char* read_and_allocate(FILE* input){
 			buffer = temp;
 		}
 		buffer[index_to_write++] = c;
+		c = fgetc(input);
 	}
 	buffer[index_to_write] = '\0';
 
 	//check for empty buffer and EOF case
-	if(index_to_write == 0 && c == EOF){
+	if(index_to_write == 0 && feof(input)){
 		printf("reached EOF logic\n");
 		return NULL;
 	}
@@ -48,6 +50,7 @@ char* read_and_allocate(FILE* input){
 	return buffer;
 }
 
+//struct my_node 
 
 
 int main(int argc, char* argv[]){
@@ -71,6 +74,9 @@ int main(int argc, char* argv[]){
 			char** temp = (char**) realloc(commands, commands_size * sizeof(char*));
 			if(temp == NULL){
 				printf("failed to reallocate commands\n");
+				for(int i = 0; i < num_commands; i++){
+					free(commands[i]);
+				}
 				free(commands);
 				if(temp_str != NULL){
 					free(temp_str);
