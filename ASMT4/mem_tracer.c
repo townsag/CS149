@@ -42,6 +42,7 @@ char* read_and_allocate(FILE* input){
 	//check for empty buffer and EOF case
 	if(index_to_write == 0 && feof(input)){
 		printf("reached EOF logic\n");
+		free(buffer);
 		return NULL;
 	}
 		
