@@ -8,7 +8,7 @@
 #define INITIAL_BUFFER_SIZE 10;
 
 char* read_and_allocate(FILE* input){
-	printf("entering RAA\n");
+	//printf("entering RAA\n");
 	size_t buffer_size = INITIAL_BUFFER_SIZE;
 	char* buffer = (char *)calloc(buffer_size, sizeof(char));
 
@@ -45,7 +45,7 @@ char* read_and_allocate(FILE* input){
 		return NULL;
 	}
 		
-	printf("leaving RAA\n");
+	//printf("leaving RAA\n");
 
 	return buffer;
 }
@@ -57,7 +57,8 @@ struct my_node{
 };
 
 void free_list(struct my_node* head){
-	temp = head->next;
+	struct my_node* temp = head->next;
+	free(head->line);
 	free(head);
 	if(temp != NULL){
 		free_list(temp);
@@ -78,11 +79,13 @@ int main(int argc, char* argv[]){
 	int commands_size = INITIAL_BUFFER_SIZE;
 
 	struct my_node* head = (struct my_node*) calloc(1, sizeof(struct my_node));
+	head->next = NULL;
 	struct my_node* tail = head;
 
 	commands = (char**) calloc(commands_size, sizeof(char*));
 	if(commands == NULL){
 		printf("failed to allocate commands\n");
+		free_list(head);
 		return(1);
 	}
 
@@ -101,38 +104,50 @@ int main(int argc, char* argv[]){
 				}
 				free(temp_str);
 				free(commands);
+				free_list(head);
 				return 1;
 			}
 			commands = temp;
 		}
 
-		commands[num_commands++] = temp_str;
-		
 		//add the line to the linked list
-		//allocate new memory for the string pointed to by each node
-		//should be simpler when deallocating
-		temp_node = (struct my_node *)calloc(1, sizeof(struct my_node));
-		temp_node->line = (char *)calloc(strlen(temp_str) + 1, sizeof(char));
-		strcpy(temp_node->line, temp_str);
-		temp_node->line_index = num_commands;
-		temp_node->next = NULL;
-		tail->next = temp_node;
-		tail = temp_node;
-
-		printf("you entered: %s\n", commands[num_commands - 1]);
+                //allocate new memory for the string pointed to by each node
+                //should be simpler when deallocating
+                struct my_node* temp_node = (struct my_node *)calloc(1, sizeof(struct my_node));
+                temp_node->line = (char *)calloc(strlen(temp_str) + 1, sizeof(char));
+                strcpy(temp_node->line, temp_str);
+                temp_node->line_index = num_commands;
+                temp_node->next = NULL;
+                tail->next = temp_node;
+                tail = temp_node;
+		
+		commands[num_commands++] = temp_str;
+		//printf("you entered: %s\n", commands[num_commands - 1]);
 		temp_str = NULL;
 	}
 	printf("finished while loop\n");
+	
+	//housekeeping, remove default head from linked list
+	struct my_node * temp_head = head;
+	head = head->next;
+	temp_head->next = NULL;
+	free_list(temp_head);
 
 	for(int i = 0; i < num_commands; i++){
 		printf("line %d: %s\n", i, commands[i]);
 	}
 
+	if(head != NULL){
+		print_list(head);
+	}
+	
+	//free memory for strings in commands, commands list, strings in linked list, linked list
 	for(int i = 0; i < num_commands; i++){
 		free(commands[i]);
 	}
 	free(commands);
-	
+	free_list(head);
+
 	return 0;
 }
 
