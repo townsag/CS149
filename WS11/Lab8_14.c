@@ -37,6 +37,13 @@ void PrintContactNode(ContactNode* node){
 	printf("Phone number: %s\n\n", GetPhoneNumber(node)); 
 }
 
+void PrintList(ContactNode* head){
+	PrintContactNode(head);
+	if(GetNext(head) != NULL){
+		PrintList(GetNext(head));
+	}
+}
+
 int main(void) {
 	ContactNode* head = (ContactNode*) malloc(sizeof(ContactNode));
 	ContactNode* tail = head;
@@ -61,11 +68,16 @@ int main(void) {
 		InsertAfter(tail, temp);
 		tail = temp;
 	}
+	
+	//PrintContactNode(tail);
 
+	printf("\nCONTACT LIST\n");
 	ContactNode* tempHead = head;
 	head = GetNext(head);
 
 	free(tempHead);
+	
+	PrintList(head);
 		
 	return 0;
 }
