@@ -80,3 +80,18 @@ void print_list(struct my_node* head){
                 temp = temp->next;
         }
 }
+
+
+struct my_commands* new_commands (){
+	struct my_commands* temp = (struct my_commands*)calloc(sizeof(struct my_commands));
+	temp->size = INITIAL_BUFFER_SIZE;
+	temp->num_commands = 0;
+	temp->commands = (char**)calloc(temp->size, sizeof(char**));
+	if(temp->commands == NULL){
+		printf("failed to allocate commands\n");
+		exit(1);
+	}
+	return temp;
+}
+
+
