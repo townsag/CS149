@@ -18,8 +18,9 @@ struct my_commands{
 };
 
 struct my_commands* new_commands();
-void add_command(struct my_commands* commands, char* command_str);
+int add_command(struct my_commands* commands, char* command_str);
 char* get_command(struct my_commands* commands, int index);
+void print_commands(struct my_commands* commands);
 void free_commands_struct(struct my_commands* commands);
 
 

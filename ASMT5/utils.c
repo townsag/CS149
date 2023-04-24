@@ -119,7 +119,13 @@ char* get_command(struct my_commands* commands_struct, int index){
 	return commands_struct->commands[index];
 }
 
-int free_commands_struct(struct my_commands* commands_struct){
+void print_commands(struct my_commands* commands_struct){
+	for(int i = 0; i < commands_struct->num_commands; i++){
+		printf("%s\n", commands_struct->commands[i]);
+	}
+}
+
+void free_commands_struct(struct my_commands* commands_struct){
 	for(int i = 0; i < commands_struct->num_commands; i++){
 		free(commands_struct->commands[i]);
 	}
