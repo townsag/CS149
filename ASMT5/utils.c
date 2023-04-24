@@ -56,6 +56,7 @@ char* read_and_allocate(FILE* input){
         return buffer;
 }
 
+/*
 //this function recursively frees a linked list
 //this function makes the assumption that the head of the linked list is not a null pointer
 //this function does not return anything
@@ -79,6 +80,22 @@ void print_list(struct my_node* head){
                 printf("Line %d: %s\n", temp->line_index, temp->line);
                 temp = temp->next;
         }
+}*/
+
+struct my_node* new_node(char* line, int index){
+	struct my_node* temp = (struct my_node*)calloc(1, sizeof(struct my_node));
+	if(temp == NULL){
+		printf("failed to allocate node\n");
+		return NULL;
+	}
+	temp->line = line;
+	temp->line_index = index;
+	return temp;
+}
+
+void free_my_node(struct my_node* to_free){
+	free(to_free->line);
+	free(to_free);
 }
 
 int count_tokens(char* command, char delim){
@@ -193,4 +210,41 @@ void free_commands_struct(struct my_commands* commands_struct){
 }
 
 
+struct my_list* new_my_list(){
+	struct my_list* temp = (struct my_list*)calloc(1, sizeof(struct my_list));
+	if(temp == NULL){
+		printf("failed to allocate new list\n");
+		return NULL;
+	}
+	temp->head = NULL;
+	temp->tail = NULL;
+}
 
+void append_node(struct my_list* list, struct my_node* to_add){
+	if(list->tail == NULL){
+		list->head = list-> tail = to_add;
+	} else {
+		list->tail->next = to_add;
+		list->tail = to_add;
+	}
+}
+
+void free_my_list(struct my_list* to_free){
+	struct my_node* temp = to_free->head;
+
+	while(temp != NULL){
+		struct my_node* look_ahead = temp->next;
+		//free(temp->line);
+		//free(temp);
+		free_my_node(temp);
+		temp = look_ahead;
+	}
+}
+
+void print_my_list(struct my_list* to_print){
+	struct my_node* temp = to_print->head;
+        while(temp != NULL){
+                printf("Line %d: %s\n", temp->line_index, temp->line);
+                temp = temp->next;
+        }
+}
