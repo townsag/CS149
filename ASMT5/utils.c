@@ -67,8 +67,6 @@ void free_list(struct my_node* head){
         if(temp != NULL){
                 free_list(temp);
         }
-}
-
 //this function prints the contents of a linked list
 //this function makes very few assumptions, for example it can also print a null pointer head linked list
 //this function does not return anything
@@ -89,9 +87,45 @@ struct my_commands* new_commands (){
 	temp->commands = (char**)calloc(temp->size, sizeof(char**));
 	if(temp->commands == NULL){
 		printf("failed to allocate commands\n");
-		exit(1);
+		return NULL;
 	}
 	return temp;
 }
+
+int add_command(struct my_commands* commands_struct, char* command_str){
+	//check to see if commands is full
+	if(commands_struct->num_commands == commands_struct->size){
+     		//reallocate commands
+                commands_struct->size *= 2;
+                char** temp = (char**) realloc(commands_struct->commands, commands_struct->size * sizeof(char*));
+                if(temp == NULL){
+			printf("failed to reallocate commands\n");
+                        commands_struct->size /= 2;
+                        return 1;
+		}
+		commands = temp;
+	}
+	
+	commands_struct->commands[commands_struct->num_commands++] = command_str;
+	return 0;
+}
+
+char* get_command(struct my_commands* commands_struct, int index){
+	if(index >= commands_struct->num_commands){
+		printf("index out of bounds in get command\n");
+		return NULL;
+	}
+	
+	return commands_struct->commands[index];
+}
+
+int free_commands_struct(struct my_commands* commands_struct){
+	for(int i = 0; i < commands_struct->num_commands; i++){
+		free(commands_struct->commands[i]);
+	}
+	free(commands_struct->commands)
+	free(commands_struct);
+}
+
 
 

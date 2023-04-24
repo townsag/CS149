@@ -20,7 +20,7 @@ struct my_commands{
 struct my_commands* new_commands();
 void add_command(struct my_commands* commands, char* command_str);
 char* get_command(struct my_commands* commands, int index);
-void free_commands(struct my_commands* commands);
+void free_commands_struct(struct my_commands* commands);
 
 
 void free_list(struct my_node* head);
