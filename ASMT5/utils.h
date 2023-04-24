@@ -11,15 +11,21 @@ struct my_node{
         struct my_node * next;
 };
 
+struct one_command{
+	char* command;
+	char** command_split;
+	int num_tokens;
+}
+
 struct my_commands{
-	char** commands;
+	struct one_command** commands;
 	int num_commands;
 	int size;
 };
 
 struct my_commands* new_commands();
 int add_command(struct my_commands* commands, char* command_str);
-char* get_command(struct my_commands* commands, int index);
+struct one_command* get_command_str(struct my_commands* commands, int index);
 void print_commands(struct my_commands* commands);
 void free_commands_struct(struct my_commands* commands);
 

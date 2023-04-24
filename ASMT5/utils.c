@@ -81,12 +81,56 @@ void print_list(struct my_node* head){
         }
 }
 
+int count_tokens(char* command, char delim){
+	int count = 0;
+	if(strlen(command) > 0){ count = 1;}
+	for(int i = 0; i < strlen(command); i++){
+		if(command[i] == delim){
+			count++;
+		}
+	}
+	return count;
+}
+
+struct one_command* new_one_command(char* input_str){
+	struct one_command* temp = (struct one_command*)calloc(1, sizeof(struct one_command));
+	temp->command = input_str;
+	//temp->num_tokens = count_tokens(input_str, ' ');
+	temp->command_split = NULL;
+	const char delim[2] = " ";
+
+	char* copy_str = strdup(input_str);
+	char* token = strtok(copy_str, delim);
+	int i = 0;
+
+	while(token != NULL){
+		temp->command_split = (char**)realloc(temp->command_split, sizeof(char*) * (i + 1));
+		int temp_len = strlen(token) + 1;
+		temp->command_split[i] = malloc(temp_len);
+		strcpy(temp->command_split[i], token);
+		i++;
+		token = strtok(NULL, delim);
+	}
+	
+	//add null to the end of the command split string list
+	temp->command_split = (char**)realloc(temp->command_split, sizeof(char*) * (i + 1));
+	command_split[i++] = NULL;
+	temp->num_tokens = i;
+	return temp;
+}
+
+void print_one_command(struct one_command* to_print){
+	printf("%s\n", to_print->command);
+	for(int i = 0; i < to_print->num_tokens - 1; i++){
+		printf("%s\n", to_print->command_split[i]);
+	}
+}
 
 struct my_commands* new_commands (){
 	struct my_commands* temp = (struct my_commands*)calloc(1, sizeof(struct my_commands));
 	temp->size = INITIAL_BUFFER_SIZE;
 	temp->num_commands = 0;
-	temp->commands = (char**)calloc(temp->size, sizeof(char**));
+	temp->commands = (struct one_command**)calloc(temp->size, sizeof(struct one_command*));
 	if(temp->commands == NULL){
 		printf("failed to allocate commands\n");
 		return NULL;
@@ -99,7 +143,7 @@ int add_command(struct my_commands* commands_struct, char* command_str){
 	if(commands_struct->num_commands == commands_struct->size){
      		//reallocate commands
                 commands_struct->size *= 2;
-                char** temp = (char**) realloc(commands_struct->commands, commands_struct->size * sizeof(char*));
+                struct one_command** temp = (struct one_command**) realloc(commands_struct->commands, commands_struct->size * sizeof(struct one_command*));
                 if(temp == NULL){
 			printf("failed to reallocate commands\n");
                         commands_struct->size /= 2;
@@ -108,11 +152,13 @@ int add_command(struct my_commands* commands_struct, char* command_str){
 		commands_struct->commands = temp;
 	}
 	
-	commands_struct->commands[commands_struct->num_commands++] = command_str;
+	//commands_struct->commands[commands_struct->num_commands++] = command_str;
+	commands_struct->commands[commands_struct->num_commands++] = new_one_command(command_str);
+	
 	return 0;
 }
 
-char* get_command(struct my_commands* commands_struct, int index){
+struct one_command* get_command(struct my_commands* commands_struct, int index){
 	if(index >= commands_struct->num_commands){
 		printf("index out of bounds in get command\n");
 		return NULL;
