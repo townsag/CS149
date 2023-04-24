@@ -25,30 +25,18 @@ int main(int argc, char* argv[]){
 	}
 
 	struct my_list* list_obj = new_my_list();
-	//struct my_node* head = (struct my_node*) malloc(sizeof(struct my_node));
-	//head->next = NULL;
-	//struct my_node* tail = head;
+	if(list_obj == NULL){
+		printf("failed to allocate list\n");
+		return 1;
+	}
 
 	printf("starting while loop\n");
 	char* temp_str = NULL;
 	int counter = 0;
 	while((temp_str = read_and_allocate(stdin)) != NULL){
-		//add the line to the linked list
-                //allocate new memory for the string pointed to by each node
-                //should be simpler when deallocating
+		//the commands list gets temp str and the linked list gets copy_str
                 char* copy_str = strdup(temp_str);
-		
 		append_node(list_obj, new_node(copy_str, counter++));
-
-		
-		
-		//struct my_node* temp_node = (struct my_node *)malloc(1* sizeof(struct my_node));
-                //temp_node->line = (char *)malloc((strlen(temp_str) + 1)* sizeof(char));
-                //strcpy(temp_node->line, temp_str);
-                //temp_node->line_index = counter++;
-                //temp_node->next = NULL;
-                //tail->next = temp_node;
-                //tail = temp_node;
 		
 		//memory allocated by read_and_allocate is sent to commands struct, commands struct
 		//is responsible for freeing this memory, freed in free_commands
@@ -60,24 +48,11 @@ int main(int argc, char* argv[]){
 		temp_str = NULL;
 	}
 	printf("finished while loop\n");
-	
-	//housekeeping, remove default head from linked list
-	//struct my_node * temp_head = head;
-	//head = head->next;
-	//temp_head->next = NULL;
-	//free_list(temp_head);
-	
 	printf("printing all of commands list\n");
 	print_commands(commands_obj);
 
 	printf("printing linked list of nodes\n");
 	print_my_list(list_obj);
-
-	/*
-	printf("printing all of linked list\n");
-	if(head != NULL){
-		print_list(head);
-	}*/
 	
 	//free memory for strings in commands, commands list, strings in linked list, linked list
 	free_commands_struct(commands_obj);

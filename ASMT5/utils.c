@@ -218,6 +218,7 @@ struct my_list* new_my_list(){
 	}
 	temp->head = NULL;
 	temp->tail = NULL;
+	return temp;
 }
 
 void append_node(struct my_list* list, struct my_node* to_add){
@@ -239,6 +240,7 @@ void free_my_list(struct my_list* to_free){
 		free_my_node(temp);
 		temp = look_ahead;
 	}
+	free(to_free);
 }
 
 void print_my_list(struct my_list* to_print){
