@@ -30,6 +30,7 @@ int main(int argc, char* argv[]){
 
 	printf("starting while loop\n");
 	char* temp_str = NULL;
+	int counter = 0;
 	while((temp_str = read_and_allocate(stdin)) != NULL){
 		//add the line to the linked list
                 //allocate new memory for the string pointed to by each node
@@ -37,17 +38,18 @@ int main(int argc, char* argv[]){
                 struct my_node* temp_node = (struct my_node *)malloc(1* sizeof(struct my_node));
                 temp_node->line = (char *)malloc((strlen(temp_str) + 1)* sizeof(char));
                 strcpy(temp_node->line, temp_str);
-                temp_node->line_index = num_commands;
+                temp_node->line_index = counter++;
                 temp_node->next = NULL;
                 tail->next = temp_node;
                 tail = temp_node;
 		
 		//memory allocated by read_and_allocate is sent to commands struct, commands struct
 		//is responsible for freeing this memory, freed in free_commands
-		int status = add_command(command_obj, temp_str);
+		int status = add_command(commands_obj, temp_str);
 		if(status == 1){
 			printf("failed to add to commands\n");
 			return 1;
+		}
 		temp_str = NULL;
 	}
 	printf("finished while loop\n");
