@@ -114,8 +114,9 @@ struct one_command* new_one_command(char* input_str){
 	
 	//add null to the end of the command split string list
 	temp->command_split = (char**)realloc(temp->command_split, sizeof(char*) * (i + 1));
-	command_split[i++] = NULL;
+	temp->command_split[i++] = NULL;
 	temp->num_tokens = i;
+	free(copy_str);
 	return temp;
 }
 
@@ -126,6 +127,15 @@ void print_one_command(struct one_command* to_print){
 	}
 }
 
+void free_one_command(struct one_command* to_free){
+	free(to_free->command);
+	for(int i = 0; i < to_free->num_tokens - 1; i++){	//last token should be null
+		free(to_free->command_split[i]);
+	}
+	free(to_free->command_split);
+	free(to_free);
+}
+	
 struct my_commands* new_commands (){
 	struct my_commands* temp = (struct my_commands*)calloc(1, sizeof(struct my_commands));
 	temp->size = INITIAL_BUFFER_SIZE;
@@ -169,13 +179,14 @@ struct one_command* get_command(struct my_commands* commands_struct, int index){
 
 void print_commands(struct my_commands* commands_struct){
 	for(int i = 0; i < commands_struct->num_commands; i++){
-		printf("%s\n", commands_struct->commands[i]);
+		//printf("%s\n", commands_struct->commands[i]);
+		print_one_command(commands_struct->commands[i]);
 	}
 }
 
 void free_commands_struct(struct my_commands* commands_struct){
 	for(int i = 0; i < commands_struct->num_commands; i++){
-		free(commands_struct->commands[i]);
+		free_one_command(commands_struct->commands[i]);
 	}
 	free(commands_struct->commands);
 	free(commands_struct);

@@ -15,7 +15,7 @@ struct one_command{
 	char* command;
 	char** command_split;
 	int num_tokens;
-}
+};
 
 struct my_commands{
 	struct one_command** commands;
