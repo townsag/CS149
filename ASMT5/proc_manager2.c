@@ -136,8 +136,10 @@ int main(int argc, char* argv[]){
 
 	int status;
 	pid_t exited_pid;
-
+	
+	printf("starting second while loop, num_children: %d\n", num_children);
 	while(num_children > 0){
+		exited_pid = waitpid(-1, &status, WNOHANG);
         	if(exited_pid == -1) { // check for errors
             		perror("waitpid");
         	} else if (exited_pid > 0) { // child process finished
@@ -146,6 +148,8 @@ int main(int argc, char* argv[]){
 			//write_exit_code(exited_pid, WEXITSTATUS(status));
         	}
     	}
+
+	printf("ending second while loop\n");
 
 	//free memory for strings in commands, commands list, strings in linked list, linked list
 	free_commands_struct(commands_obj);
