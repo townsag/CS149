@@ -1,13 +1,17 @@
 #ifndef HASH_H
 #define HASH_H
 
+#include <time.h>
+
 #define HASH_SIZE 101
 
 struct nlist {
         /* table entry: */
         struct nlist *next; /* next entry in chain */
         char* command;
-        char *defn; /* replacement text, can remove */
+        struct timespec start;
+	struct timespec finish;
+
         /* starttime */
         /* finishtime */
         /* index // this is the line index in the input text file */
