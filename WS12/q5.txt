@@ -1,0 +1,40 @@
+townsag@townsag:~/Desktop/CS149/WS12$ valgrind --leak-check=full ./q5
+==2401== Memcheck, a memory error detector
+==2401== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==2401== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==2401== Command: ./q5
+==2401== 
+==2401== Invalid write of size 4
+==2401==    at 0x108770: main (in /home/townsag/Desktop/CS149/WS12/q5)
+==2401==  Address 0x4a4a1d0 is 0 bytes after a block of size 400 alloc'd
+==2401==    at 0x4865058: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-arm64-linux.so)
+==2401==    by 0x108763: main (in /home/townsag/Desktop/CS149/WS12/q5)
+==2401== 
+==2401== 
+==2401== HEAP SUMMARY:
+==2401==     in use at exit: 400 bytes in 1 blocks
+==2401==   total heap usage: 1 allocs, 0 frees, 400 bytes allocated
+==2401== 
+==2401== 400 bytes in 1 blocks are definitely lost in loss record 1 of 1
+==2401==    at 0x4865058: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-arm64-linux.so)
+==2401==    by 0x108763: main (in /home/townsag/Desktop/CS149/WS12/q5)
+==2401== 
+==2401== LEAK SUMMARY:
+==2401==    definitely lost: 400 bytes in 1 blocks
+==2401==    indirectly lost: 0 bytes in 0 blocks
+==2401==      possibly lost: 0 bytes in 0 blocks
+==2401==    still reachable: 0 bytes in 0 blocks
+==2401==         suppressed: 0 bytes in 0 blocks
+==2401== 
+==2401== For lists of detected and suppressed errors, rerun with: -s
+==2401== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
+
+When the program is run normally there is no problem because the address immediately
+after the array is unelikely to be pointing to somewhere outside of heap memeory.
+
+It is clear form the valgrind output that the write to data[100] is invalid. This is an
+off by one error
+
+The program is incorrect because it accesses memory outside of the allocated space for
+data. This space could hold information for another varible that is allocated on the
+heap.

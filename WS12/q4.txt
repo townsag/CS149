@@ -1,0 +1,28 @@
+townsag@townsag:~/Desktop/CS149/WS12$ valgrind --leak-check=full ./q4 
+==2319== Memcheck, a memory error detector
+==2319== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==2319== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==2319== Command: ./q4
+==2319== 
+4
+==2319== 
+==2319== HEAP SUMMARY:
+==2319==     in use at exit: 4 bytes in 1 blocks
+==2319==   total heap usage: 2 allocs, 1 frees, 1,028 bytes allocated
+==2319== 
+==2319== 4 bytes in 1 blocks are definitely lost in loss record 1 of 1
+==2319==    at 0x4865058: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-arm64-linux.so)
+==2319==    by 0x1087E3: main (in /home/townsag/Desktop/CS149/WS12/q4)
+==2319== 
+==2319== LEAK SUMMARY:
+==2319==    definitely lost: 4 bytes in 1 blocks
+==2319==    indirectly lost: 0 bytes in 0 blocks
+==2319==      possibly lost: 0 bytes in 0 blocks
+==2319==    still reachable: 0 bytes in 0 blocks
+==2319==         suppressed: 0 bytes in 0 blocks
+==2319== 
+==2319== For lists of detected and suppressed errors, rerun with: -s
+==2319== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+The program completes when not using valgrind. when run using valgrind it becomes clear 
+that the allocated memory becomes a memory leak when not freed
