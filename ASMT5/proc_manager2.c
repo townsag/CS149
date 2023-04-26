@@ -7,26 +7,41 @@
 #include <sys/wait.h>
 
 #include "utils.h"
+#include "hash.h"
 
-void write_exit_code(pid_t child_pid, int status){
+void write_exit_code(pid_t child_pid, pid_t parent_pid, int status, struct nlist* node){
 	char* out_file_name_str = NULL;
-	asprintf(&out_file_name_str, "%d.err", child_pid);
+	char* err_file_name_str = NULL;
+	asprintf(&out_file_name_str, "%d.out", child_pid);
+	asprintf(&err_file_name_str, "%d.err", child_pid);
 	
 	int out_file_desc = open(out_file_name_str, O_WRONLY | O_APPEND, 0777);
-	if(out_file_desc == -1){
+	int err_file_desc = open(out_file_name_str, O_WRONLY | O_APPEND, 0777);
+	if(out_file_desc == -1 || err_file_desc == -1){
 		free(out_file_name_str);
+		free(err_file_name_str);
 		perror("failed to open\n");
 		return;
 	}
+	
+	char* out_message = NULL;
+	asprintf(&out_message, "Finished child %d pid of parent %d\n Finished at %f, runtime duration %f\n", child_pid, parent_pid, node->start.tv_sec, get_duration(node->start));
+	int len_written = write(out_file_desc, out_message, strlen(out_message));
+	if(len_written == -1){
+		perror("failed to print\n");
+		return;
+	}
+	free(out_message);
 
 	if(WIFSIGNALED(status)){
 		char* message = NULL;
 		asprintf(&message, "killed with signal %d\n", WTERMSIG(status));
-		int len_written = write(out_file_desc, message, strlen(message));
+		int len_written = write(err_file_desc, message, strlen(message));
                 if(len_written == -1){
                         perror("failed to print\n");
 			free(message);
 			free(out_file_name_str);
+			free(err_file_name_str);
                         return;
                 }
 		free(message);
@@ -38,12 +53,14 @@ void write_exit_code(pid_t child_pid, int status){
 		if(len_written == -1){
 			free(message);
 			free(out_file_name_str);
+			free(err_file_name_str);
 			perror("failed to print\n");
 			return;
 		}
 		free(message);
 	}
 	free(out_file_name_str);
+	free(err_file_name_str);
 	close(out_file_desc);
 	return;
 }
@@ -67,6 +84,12 @@ int main(int argc, char* argv[]){
 	struct my_list* list_obj = new_my_list();
 	if(list_obj == NULL){
 		printf("failed to allocate list\n");
+		return 1;
+	}
+	
+	struct hash_table* hash_obj = new_hash_table();
+	if(hash_obj == NULL){
+		printf("failed to allocate hash table\n");
 		return 1;
 	}
 
@@ -121,6 +144,10 @@ int main(int argc, char* argv[]){
 				exit(EXIT_FAILURE);
 		    	}
 
+			//store the relevant information for the process in the hash table
+			struct nlist* temp = insert(hash_obj, child_pid, strdup(commands_obj-commands[index]->command), index);
+			add_start(temp);
+
 			printf("Starting command %i: child %d pid of parent %d\n", index, child_pid, parent_pid);
 			fflush(stdout);
 			
@@ -144,7 +171,13 @@ int main(int argc, char* argv[]){
             		perror("waitpid");
         	} else if (exited_pid > 0) { // child process finished
             		num_children--;
-			write_exit_code(exited_pid, status);
+			struct nlist* temp_node = lookup(table_obj, exited_pid);
+			if(temp_node == NULL){
+				printf("pid not found\n");
+				return 1;
+			}
+			add_stop(temp_node);
+			write_exit_code(exited_pid, getpid(), status, temp_node);
 			//write_exit_code(exited_pid, WEXITSTATUS(status));
         	}
     	}
@@ -155,6 +188,6 @@ int main(int argc, char* argv[]){
 	free_commands_struct(commands_obj);
 	//free_list(head);
 	free_my_list(list_obj);
-	
+	free_hash_table(hash_obj);
 	return 0;
 }

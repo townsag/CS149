@@ -20,7 +20,6 @@
 *
 *
 * This nlist is a node, which stores one command's info in the hashtable.
-* TODO: You will need to adopt this code a little.
 *
 * The char *name and char *defn you can remove.
 * The nlist *next field is a pointer to the next node in the linked list.
@@ -46,7 +45,16 @@ struct nlist* new_nlist(pid_t pid, char* command, int index){
 }
 
 void add_start(struct nlist* to_start){
+	clock_gettime(CLOCK_MONOTONIC, &(to_start->start));
+}
 
+void add_stop(struct nlist* to_stop){
+	clock_gettime(CLOCK_MONOTONIC, &(to_stop->stop));
+}
+
+double get_duration(struct nlist* node){
+	return (node->stop.tv_sec - node->start.tv_sec);
+}
 
 void free_nlist(struct nlist* to_free){
 	free(to_free->command);
@@ -98,8 +106,6 @@ struct nlist *lookup(struct hash_table* table_obj, int pid){
 
 
 /* insert: put (name, defn) in hashtab */
-/* TODO: change this to insert in hash table the info for a new pid and its command */
-/* TODO: change signature to: struct nlist *insert(char *command, int pid, int index). */
 /* This insert returns a nlist node. Thus when you call insert in your main function */
 /* you will save the returned nlist node in a variable (mynode).*/
 /* Then you can set the starttime and finishtime from your main function: */
@@ -107,7 +113,7 @@ struct nlist *lookup(struct hash_table* table_obj, int pid){
 struct nlist *insert(struct hash_table* table_obj, int pid, char* command, int index){
 	struct nlist *np;
 	unsigned hashval;
-	//TODO change to lookup by pid. There are 2 cases:
+	//There are 2 cases:
 	if ((np = lookup(table_obj, pid)) == NULL) { 
 		/* case 1: the pid is not found, so you have to create it with malloc.
 		 * Then you want to set the pid, command and index */
