@@ -121,6 +121,8 @@ int main(int argc, char* argv[]){
 	pid_t pid;
 	int num_children = 0;
 	for(int index = 0; index < commands_obj->num_commands; index++){
+		//char* copy_str = strdup(commands_obj->commands[index]->command);
+                //printf("this is the string that is copied and then given to hash: %s\n", copy_str);
 		pid = fork();
 		if(pid == 0){//in the child process
 			//change the stdout and stderr files to be pid.out and pid.err
@@ -145,10 +147,12 @@ int main(int argc, char* argv[]){
 				perror("dup2");
 				exit(EXIT_FAILURE);
 		    	}
-
+			
+			//char* copy_str = strdup(commands_obj->commands[index]->command);
+			//printf("this is the string that is copied and then given to hash: %s\n", copy_str);
 			//store the relevant information for the process in the hash table
-			struct nlist* temp = insert(hash_obj, child_pid, strdup(commands_obj->commands[index]->command), index);
-			add_start(temp);
+			//struct nlist* temp = insert(hash_obj, child_pid, copy_str, index);
+			//add_start(temp);
 
 			printf("Starting command %i: child %d pid of parent %d\n", index, child_pid, parent_pid);
 			fflush(stdout);
@@ -159,9 +163,19 @@ int main(int argc, char* argv[]){
 		} else if (pid < 0){
 			fprintf(stderr,"fork failed\n");
 		} else {
+			char* copy_str = strdup(commands_obj->commands[index]->command);
+                        printf("this is the string that is copied and then given to hash: %s\n", copy_str);
+                        //store the relevant information for the process in the hash table
+                        struct nlist* temp = insert(hash_obj, pid, copy_str, index);
+                        add_start(temp);
+
 			num_children++;
 		}
 	}
+	
+	printf("printing the hash table\n");	
+	print_hash_table(hash_obj);
+	printf("end proint\n");
 
 	int status;
 	pid_t exited_pid;

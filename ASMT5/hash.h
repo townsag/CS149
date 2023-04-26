@@ -26,6 +26,8 @@ struct nlist* new_nlist(pid_t pid, char* command, int index);
 void add_start(struct nlist* to_start);
 void add_stop(struct nlist* to_stop);
 double get_duration(struct nlist* node);
+void print_node(struct nlist* node);
+void print_nlist(struct nlist* head);
 void free_nlist(struct nlist* to_free);
 void free_nlist_recursive(struct nlist* head);
 
@@ -33,6 +35,7 @@ struct hash_table* new_hash_table();
 unsigned hash(pid_t pid);
 struct nlist* lookup(struct hash_table* table_obj, pid_t pid);
 struct nlist* insert(struct hash_table* table_obj, pid_t pid, char* command, int index);
+void print_hash_table(struct hash_table* table_obj);
 void free_hash_table(struct hash_table* to_free);
 
 #endif

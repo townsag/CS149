@@ -56,6 +56,17 @@ double get_duration(struct nlist* node){
 	return (node->stop.tv_sec - node->start.tv_sec);
 }
 
+void print_node(struct nlist* node){
+	printf("Command: %s, index: %d, pid: %d\n", node->command, node->index, node->pid);
+}
+
+void print_nlist(struct nlist* head){
+	if(head != NULL){
+		print_node(head);
+		print_nlist(head->next);
+	}
+}
+
 void free_nlist(struct nlist* to_free){
 	free(to_free->command);
 	free(to_free);
@@ -81,6 +92,9 @@ struct hash_table* new_hash_table(){
 		printf("failed to allocate hash table table\n");
 		free(temp);
 		return NULL;
+	}
+	for(int i = 0; i < HASH_SIZE; i++){
+		temp->table[i] = NULL;
 	}
 	return temp;
 }
@@ -136,6 +150,12 @@ struct nlist *insert(struct hash_table* table_obj, int pid, char* command, int i
 	return np;
 }
 
+void print_hash_table(struct hash_table* hash_obj){
+	for(int i = 0; i < HASH_SIZE; i++){
+		printf("nodes at bucket %d:\n", i);
+		print_nlist(hash_obj->table[i]);
+	}
+}
 
 void free_hash_table(struct hash_table* table_obj){
 	for(int i = 0; i < HASH_SIZE; i++){
