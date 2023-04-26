@@ -25,7 +25,7 @@ void write_exit_code(pid_t child_pid, pid_t parent_pid, int status, struct nlist
 	}
 	
 	char* out_message = NULL;
-	asprintf(&out_message, "Finished child %d pid of parent %d\n Finished at %f, runtime duration %f\n", child_pid, parent_pid, node->start.tv_sec, get_duration(node->start));
+	asprintf(&out_message, "Finished child %d pid of parent %d\n Finished at %ld, runtime duration %f\n", child_pid, parent_pid, node->start.tv_sec, get_duration(node));
 	int len_written = write(out_file_desc, out_message, strlen(out_message));
 	if(len_written == -1){
 		perror("failed to print\n");
@@ -126,6 +126,8 @@ int main(int argc, char* argv[]){
 			//change the stdout and stderr files to be pid.out and pid.err
 			pid_t child_pid = getpid();
 			pid_t parent_pid = getppid();
+			
+			printf("index: %d, child pid: %d\n", index, child_pid);
 
 			char *err_filename = NULL;
     			char *out_filename = NULL;
@@ -145,7 +147,7 @@ int main(int argc, char* argv[]){
 		    	}
 
 			//store the relevant information for the process in the hash table
-			struct nlist* temp = insert(hash_obj, child_pid, strdup(commands_obj-commands[index]->command), index);
+			struct nlist* temp = insert(hash_obj, child_pid, strdup(commands_obj->commands[index]->command), index);
 			add_start(temp);
 
 			printf("Starting command %i: child %d pid of parent %d\n", index, child_pid, parent_pid);
@@ -171,7 +173,8 @@ int main(int argc, char* argv[]){
             		perror("waitpid");
         	} else if (exited_pid > 0) { // child process finished
             		num_children--;
-			struct nlist* temp_node = lookup(table_obj, exited_pid);
+			printf("looking for PID: %d\n", exited_pid);
+			struct nlist* temp_node = lookup(hash_obj, exited_pid);
 			if(temp_node == NULL){
 				printf("pid not found\n");
 				return 1;

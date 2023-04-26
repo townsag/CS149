@@ -10,7 +10,7 @@ struct nlist {
         struct nlist *next; /* next entry in chain */
         char* command;
         struct timespec start;
-	struct timespec finish;
+	struct timespec stop;
 	int index;
 	pid_t pid;
         /* index // this is the line index in the input text file */
