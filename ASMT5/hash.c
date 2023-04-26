@@ -28,7 +28,10 @@
 * consequently there is one linked list of nlists under a hashtable slot.
 */
 
+#include <stdio.h>
+#include <stdlib.h>
 #include "hash.h"
+
 
 //struct nlist { 
 	/* table entry: */
@@ -69,11 +72,28 @@ void free_nlist_recursive(struct nlist* to_free){
 	free(to_free);
 }
 
+struct hash_table* new_hash_table(){
+	struct hash_table* temp = (struct hash_table*) calloc(1, sizeof(struct hash_table));
+	if(temp == NULL){
+		printf("failed to allocate hash table struct\n");
+		return NULL;
+	}
+	
+	temp->table = (struct nlist**)calloc(HASH_SIZE, sizeof(struct nlist*));
+	if(temp->table == NULL){
+		printf("failed to allocate hash table table\n");
+		free(temp);
+		return NULL;
+	}
+	return temp;
+}
+
+
 /* This is the hash function: form hash value for string s */
 /* TODO change to: unsigned hash(int pid) */
 /* TODO modify to hash by pid . */
 /* You can use a simple hash function: pid % HASHSIZE */
-unsigned hash(pid_t pid){
+unsigned hash(int pid){
 	//unsigned hashval;
 	/*for (hashval = 0; *s != '\0'; s++){
 		hashval = *s + 31 * hashval;
@@ -87,16 +107,15 @@ unsigned hash(pid_t pid){
 /* This is traversing the linked list under a slot of the hash
 table. The array position to look in is returned by the hash
 function */
-struct nlist *lookup(char *s){
+struct nlist *lookup(struct hash_table* table_obj, int pid){
 	struct nlist *np;
-	for (np = hashtab[hash(s)]; np != NULL; np = np->next){
-		if (strcmp(s, np->name) == 0)
+	for (np = table_obj->table[hash(pid)]; np != NULL; np = np->next){
+		if (pid == np->pid)
 		return np; /* found */
 	}
 	return NULL; /* not found */
 }
 
-char *strdup(char *);
 
 /* insert: put (name, defn) in hashtab */
 /* TODO: change this to insert in hash table the info for a new pid and its command */
@@ -105,24 +124,23 @@ char *strdup(char *);
 /* you will save the returned nlist node in a variable (mynode).*/
 /* Then you can set the starttime and finishtime from your main function: */
 /* mynode->starttime = starttime; mynode->finishtime = finishtime; */
-struct nlist *insert(char *name, char *defn){
+struct nlist *insert(struct hash_table* table_obj, int pid, char* command, int index){
 	struct nlist *np;
 	unsigned hashval;
 	//TODO change to lookup by pid. There are 2 cases:
-	if ((np = lookup(name)) == NULL) { 
+	if ((np = lookup(pid)) == NULL) { 
 		/* case 1: the pid is not found, so you have to create it with malloc.
 		 * Then you want to set the pid, command and index */
-		np = (struct nlist *) malloc(sizeof(*np));
-		if (np == NULL || (np->name = strdup(name)) == NULL){
+		//np = (struct nlist *) malloc(sizeof(*np));
+		np = new_nlist(pid, command, index);
+		if (np == NULL){
+			free(command);
 			return NULL;
 		}
 
-		hashval = hash(name);
-		if ((np->defn = strdup(defn)) == NULL){
-			return NULL;
-		}
-		np->next = hashtab[hashval];
-		hashtab[hashval] = np;
+		hashval = hash(pid);
+		np->next = table_obj->table[hashval];
+		table_obj->table[hashval] = np;
 	} else { } 
 	/* case 2: the pid is already there in the
 	hashslot, i.e. lookup found the pid. In this case you can either
@@ -131,19 +149,3 @@ struct nlist *insert(char *name, char *defn){
 	//free((void *) np->defn); free previous defn 
 	return np;
 }
-
-/** You might need to duplicate the command string to ensure you
-don't overwrite the previous command each time a new line is read
-from the input file.
-Or you might not need to duplicate it. It depends on your
-implementation. **/
-char *strdup(char *s) /* make a duplicate of s */
-{
-	char *p;
-	p = (char *) malloc(strlen(s)+1); /* +1 for */
-	if (p != NULL){
-		strcpy(p, s);
-	}
-	return p;
-}
-
