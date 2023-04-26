@@ -23,6 +23,8 @@ struct hash_table {
 };
 
 struct nlist* new_nlist(pid_t pid, char* command, int index);
+void add_start(struct nlist* to_start);
+void add_stop(struct nlist* to_stop);
 void free_nlist(struct nlist* to_free);
 void free_nlist_recursive(struct nlist* head);
 

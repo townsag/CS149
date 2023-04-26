@@ -30,6 +30,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "hash.h"
 
 struct nlist* new_nlist(pid_t pid, char* command, int index){
@@ -43,6 +44,9 @@ struct nlist* new_nlist(pid_t pid, char* command, int index){
 	temp->index = index;
 	return temp;
 }
+
+void add_start(struct nlist* to_start){
+
 
 void free_nlist(struct nlist* to_free){
 	free(to_free->command);
