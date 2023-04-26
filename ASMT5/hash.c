@@ -28,31 +28,57 @@
 * consequently there is one linked list of nlists under a hashtable slot.
 */
 
-struct nlist { 
+#include "hash.h"
+
+//struct nlist { 
 	/* table entry: */
-	struct nlist *next; /* next entry in chain */
-	char *name; /* defined name, can remove */
-	char *defn; /* replacement text, can remove */
+	//struct nlist *next;  next entry in chain 
+	//char *name;  defined name, can remove 
+	//char *defn;  replacement text, can remove 
 	/* starttime */
 	/* finishtime */
 	/* index // this is the line index in the input text file */
 	/* pid // the process id. you can use the pid result of wait to lookup in the hashtable */
 	/* char *command; // command. This is good to store for when you decide to restart a command */
-};
+//};
 
-#define HASHSIZE 101
-static struct nlist *hashtab[HASHSIZE]; /* pointer table */
+//static struct nlist *hashtab[HASHSIZE];  pointer table 
+
+struct nlist* new_nlist(pid_t pid, char* command, int index){
+	struct nlist* temp = (nlist*)calloc(1, sizeof(struct nlist));
+	if(temp == NULL){
+		printf("failed to allocate new nlist\n");
+		return NULL;
+	}
+	temp->command = command;
+	temp->pid = pid;
+	temp->index = index;
+	return temp;
+}
+
+void free_nlist(struct nlist* to_free){
+	free(to_free->command);
+	free(to_free);
+}
+
+void free_nlist_recursive(struct nlist* to_free){
+	free(to_free->command);
+	if(to_free->next != NULL){
+		free_nlist_recursive(to_free->next);
+	}
+	free(to_free);
+}
 
 /* This is the hash function: form hash value for string s */
 /* TODO change to: unsigned hash(int pid) */
 /* TODO modify to hash by pid . */
 /* You can use a simple hash function: pid % HASHSIZE */
-unsigned hash(char *s){
-	unsigned hashval;
-	for (hashval = 0; *s != '\0'; s++){
+unsigned hash(pid_t pid){
+	//unsigned hashval;
+	/*for (hashval = 0; *s != '\0'; s++){
 		hashval = *s + 31 * hashval;
-	}
-	return hashval % HASHSIZE;
+	}*/
+	return pid % HASHSIZE;
 }
 
 /* lookup: look for s in hashtab */
