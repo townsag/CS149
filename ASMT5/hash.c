@@ -32,23 +32,8 @@
 #include <stdlib.h>
 #include "hash.h"
 
-
-//struct nlist { 
-	/* table entry: */
-	//struct nlist *next;  next entry in chain 
-	//char *name;  defined name, can remove 
-	//char *defn;  replacement text, can remove 
-	/* starttime */
-	/* finishtime */
-	/* index // this is the line index in the input text file */
-	/* pid // the process id. you can use the pid result of wait to lookup in the hashtable */
-	/* char *command; // command. This is good to store for when you decide to restart a command */
-//};
-
-//static struct nlist *hashtab[HASHSIZE];  pointer table 
-
 struct nlist* new_nlist(pid_t pid, char* command, int index){
-	struct nlist* temp = (nlist*)calloc(1, sizeof(struct nlist));
+	struct nlist* temp = (struct nlist*)calloc(1, sizeof(struct nlist));
 	if(temp == NULL){
 		printf("failed to allocate new nlist\n");
 		return NULL;
@@ -90,20 +75,11 @@ struct hash_table* new_hash_table(){
 
 
 /* This is the hash function: form hash value for string s */
-/* TODO change to: unsigned hash(int pid) */
-/* TODO modify to hash by pid . */
-/* You can use a simple hash function: pid % HASHSIZE */
 unsigned hash(int pid){
-	//unsigned hashval;
-	/*for (hashval = 0; *s != '\0'; s++){
-		hashval = *s + 31 * hashval;
-	}*/
-	return pid % HASHSIZE;
+	return pid % HASH_SIZE;
 }
 
-/* lookup: look for s in hashtab */
-/* TODO change to lookup by pid: struct nlist *lookup(int pid) */
-/* TODO modify to search by pid, you won't need strcmp anymore */
+/* lookup: look for pid in hashtab */
 /* This is traversing the linked list under a slot of the hash
 table. The array position to look in is returned by the hash
 function */
@@ -128,7 +104,7 @@ struct nlist *insert(struct hash_table* table_obj, int pid, char* command, int i
 	struct nlist *np;
 	unsigned hashval;
 	//TODO change to lookup by pid. There are 2 cases:
-	if ((np = lookup(pid)) == NULL) { 
+	if ((np = lookup(table_obj, pid)) == NULL) { 
 		/* case 1: the pid is not found, so you have to create it with malloc.
 		 * Then you want to set the pid, command and index */
 		//np = (struct nlist *) malloc(sizeof(*np));
@@ -149,3 +125,18 @@ struct nlist *insert(struct hash_table* table_obj, int pid, char* command, int i
 	//free((void *) np->defn); free previous defn 
 	return np;
 }
+
+
+void free_hash_table(struct hash_table* table_obj){
+	for(int i = 0; i < HASH_SIZE; i++){
+		if(table_obj->table[i] != NULL){
+			free_nlist_recursive(table_obj->table[i]);
+		}
+	}
+	free(table_obj->table);
+	free(table_obj);
+}
+
+
+
+

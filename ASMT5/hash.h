@@ -19,8 +19,8 @@ struct nlist {
 };
 
 struct hash_table {
-	struct nlist* table;
-}
+	struct nlist** table;
+};
 
 struct nlist* new_nlist(pid_t pid, char* command, int index);
 void free_nlist(struct nlist* to_free);
@@ -28,7 +28,7 @@ void free_nlist_recursive(struct nlist* head);
 
 struct hash_table* new_hash_table();
 unsigned hash(pid_t pid);
-struct nlist* lookup(struct hash_table* table_obj, id_t pid);
+struct nlist* lookup(struct hash_table* table_obj, pid_t pid);
 struct nlist* insert(struct hash_table* table_obj, pid_t pid, char* command, int index);
 void free_hash_table(struct hash_table* to_free);
 
