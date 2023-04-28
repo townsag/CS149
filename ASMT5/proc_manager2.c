@@ -238,7 +238,7 @@ int main(int argc, char* argv[]){
 					fprintf(stderr,"RESTARTING");
 					fflush(stderr);
                         		execvp(commands_obj->commands[temp_index]->command_split[0], commands_obj->commands[temp_index]->command_split);
-        	        		printf("couldn't execute: %s", commands_obj->commands[index]->command);
+        	        		printf("couldn't execute: %s", commands_obj->commands[temp_index]->command);
                         		exit(2);
                 		} else if (pid < 0){
                 		        fprintf(stderr,"fork failed\n");
