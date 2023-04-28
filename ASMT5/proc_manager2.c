@@ -167,19 +167,20 @@ int main(int argc, char* argv[]){
 			fprintf(stderr,"fork failed\n");
 		} else {
 			char* copy_str = strdup(commands_obj->commands[index]->command);
-                        printf("this is the string that is copied and then given to hash: %s\n", copy_str);
-                        //store the relevant information for the process in the hash table
+                        //printf("this is the string that is copied and then given to hash: %s\n", copy_str);
+                        printf("started pid: %d with command %s\n", pid, copy_str);
+			//store the relevant information for the process in the hash table
                         struct nlist* temp = insert(hash_obj, pid, copy_str, index);
                         //add_start(temp);
 			set_start(temp, temp_start);
 			num_children++;
 		}
 	}
-	
+	/*
 	printf("printing the hash table\n");	
 	print_hash_table(hash_obj);
 	printf("end proint\n");
-
+	*/
 	int status;
 	pid_t exited_pid;
 	
@@ -191,7 +192,7 @@ int main(int argc, char* argv[]){
             		perror("waitpid");
         	} else if (exited_pid > 0) { // child process finished
             		num_children--;
-			printf("looking for PID: %d\n", exited_pid);
+			printf("collected PID: %d\n", exited_pid);
 			struct nlist* temp_node = lookup(hash_obj, exited_pid);
 			if(temp_node == NULL){
 				printf("pid not found\n");
@@ -232,10 +233,10 @@ int main(int argc, char* argv[]){
                                 		perror("dup2");
                                 		exit(EXIT_FAILURE);
                         		}
-					printf("RESTARTING");
+					printf("RESTARTING\n");
                         		printf("Starting command %i: child %d pid of parent %d\n", temp_index, child_pid, parent_pid);
                         		fflush(stdout);
-					fprintf(stderr,"RESTARTING");
+					fprintf(stderr,"RESTARTING\n");
 					fflush(stderr);
                         		execvp(commands_obj->commands[temp_index]->command_split[0], commands_obj->commands[temp_index]->command_split);
         	        		printf("couldn't execute: %s", commands_obj->commands[temp_index]->command);
@@ -244,8 +245,9 @@ int main(int argc, char* argv[]){
                 		        fprintf(stderr,"fork failed\n");
                 		} else {
                 		        char* copy_str = strdup(commands_obj->commands[temp_index]->command);
-                		        printf("this is the string that is copied and then given to hash: %s\n", copy_str);
-                		        //store the relevant information for the process in the hash table
+                		        //printf("this is the string that is copied and then given to hash: %s\n", copy_str);
+                		        printf("started pid: %d with command %s\n", pid, copy_str);
+					//store the relevant information for the process in the hash table
                 		        struct nlist* temp = insert(hash_obj, pid, copy_str, temp_index);
                 		        //add_start(temp);
                 		        set_start(temp, temp_start);
