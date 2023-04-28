@@ -44,6 +44,10 @@ struct nlist* new_nlist(pid_t pid, char* command, int index){
 	return temp;
 }
 
+void set_start(struct nlist* to_assign, struct timespec start){
+	to_assign->start = start;
+}
+
 void add_start(struct nlist* to_start){
 	clock_gettime(CLOCK_MONOTONIC, &(to_start->start));
 }
@@ -141,7 +145,15 @@ struct nlist *insert(struct hash_table* table_obj, int pid, char* command, int i
 		hashval = hash(pid);
 		np->next = table_obj->table[hashval];
 		table_obj->table[hashval] = np;
-	} else { } 
+	} else {
+		//inset on the same PID means that the process using that pid originally 
+		//has already finished and I need to replace that node with a new node for
+		//that process
+		//could also just update the node to hold the new values for command and index
+		free(np->command);
+		np->command = command;
+		np->index = index;
+	} 
 	/* case 2: the pid is already there in the
 	hashslot, i.e. lookup found the pid. In this case you can either
 	do nothing, or you may want to set again the command and index

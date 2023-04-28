@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/wait.h>
+#include <time.h>
 
 #include "utils.h"
 #include "hash.h"
@@ -37,6 +38,9 @@ void write_exit_code(pid_t child_pid, pid_t parent_pid, int status, struct nlist
 		char* message = NULL;
 		asprintf(&message, "killed with signal %d\n", WTERMSIG(status));
 		int len_written = write(err_file_desc, message, strlen(message));
+		if(node->respawn_flag == 0){
+			write(err_file_desc, "spawning too fast\n", strlen("spawning too fast\n"));
+		}
                 if(len_written == -1){
                         perror("failed to print\n");
 			free(message);
@@ -50,6 +54,9 @@ void write_exit_code(pid_t child_pid, pid_t parent_pid, int status, struct nlist
 		char* message = NULL;
 		asprintf(&message, "Exited with exitcode = %d\n", WEXITSTATUS(status));
 		int len_written = write(err_file_desc, message, strlen(message));
+		if(node->respawn_flag == 0){
+                        write(err_file_desc, "spawning too fast\n", strlen("spawning too fast\n"));
+                }
 		if(len_written == -1){
 			free(message);
 			free(out_file_name_str);
@@ -124,6 +131,8 @@ int main(int argc, char* argv[]){
 		//char* copy_str = strdup(commands_obj->commands[index]->command);
                 //printf("this is the string that is copied and then given to hash: %s\n", copy_str);
 		pid = fork();
+		struct timespec temp_start;
+		clock_gettime(CLOCK_MONOTONIC, &temp_start);
 		if(pid == 0){//in the child process
 			//change the stdout and stderr files to be pid.out and pid.err
 			pid_t child_pid = getpid();
@@ -161,8 +170,8 @@ int main(int argc, char* argv[]){
                         printf("this is the string that is copied and then given to hash: %s\n", copy_str);
                         //store the relevant information for the process in the hash table
                         struct nlist* temp = insert(hash_obj, pid, copy_str, index);
-                        add_start(temp);
-
+                        //add_start(temp);
+			set_start(temp, temp_start);
 			num_children++;
 		}
 	}
@@ -177,7 +186,8 @@ int main(int argc, char* argv[]){
 	printf("starting second while loop, num_children: %d\n", num_children);
 	while(num_children > 0){
 		exited_pid = waitpid(-1, &status, WNOHANG);
-        	if(exited_pid == -1) { // check for errors
+        	
+		if(exited_pid == -1) { // check for errors
             		perror("waitpid");
         	} else if (exited_pid > 0) { // child process finished
             		num_children--;
@@ -188,10 +198,62 @@ int main(int argc, char* argv[]){
 				return 1;
 			}
 			add_stop(temp_node);
+			if(get_duration(temp_node) > 2.0){
+				temp_node->respawn_flag = 1;
+			} else { temp_node->respawn_flag = 0; }
 			write_exit_code(exited_pid, getpid(), status, temp_node);
-			//write_exit_code(exited_pid, WEXITSTATUS(status));
-        	}
-    	}
+			
+			if(get_duration(temp_node) > 2.0){
+				//restart this command on a new preocess
+				int temp_index = temp_node->index;
+				pid = fork();
+                		struct timespec temp_start;
+                		clock_gettime(CLOCK_MONOTONIC, &temp_start);
+                		if(pid == 0){//in the child process
+                        		//change the stdout and stderr files to be pid.out and pid.err
+                        		pid_t child_pid = getpid();
+                        		pid_t parent_pid = getppid();
+
+                        		printf("index: %d, child pid: %d\n", temp_index, child_pid);
+
+                        		char *err_filename = NULL;
+                        		char *out_filename = NULL;
+                        		asprintf(&err_filename, "%d.err", child_pid);
+                        		asprintf(&out_filename, "%d.out", child_pid);
+                        		int err_fd = open(err_filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                        		int out_fd = open(out_filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+
+                        		if (err_fd == -1 || out_fd == -1) {
+                        		        perror("open");
+                        		        exit(EXIT_FAILURE);
+                        		}
+					
+                        		if (dup2(out_fd, STDOUT_FILENO) == -1 || dup2(err_fd, STDERR_FILENO) == -1) {
+                                		perror("dup2");
+                                		exit(EXIT_FAILURE);
+                        		}
+					printf("RESTARTING");
+                        		printf("Starting command %i: child %d pid of parent %d\n", temp_index, child_pid, parent_pid);
+                        		fflush(stdout);
+					fprintf(stderr,"RESTARTING");
+					fflush(stderr);
+                        		execvp(commands_obj->commands[temp_index]->command_split[0], commands_obj->commands[temp_index]->command_split);
+        	        		printf("couldn't execute: %s", commands_obj->commands[index]->command);
+                        		exit(2);
+                		} else if (pid < 0){
+                		        fprintf(stderr,"fork failed\n");
+                		} else {
+                		        char* copy_str = strdup(commands_obj->commands[temp_index]->command);
+                		        printf("this is the string that is copied and then given to hash: %s\n", copy_str);
+                		        //store the relevant information for the process in the hash table
+                		        struct nlist* temp = insert(hash_obj, pid, copy_str, temp_index);
+                		        //add_start(temp);
+                		        set_start(temp, temp_start);
+                		        num_children++;
+                		}
+			}
+		}
+	}
 
 	printf("ending second while loop\n");
 

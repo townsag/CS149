@@ -13,6 +13,7 @@ struct nlist {
 	struct timespec stop;
 	int index;
 	pid_t pid;
+	int respawn_flag;	//1: nothing, 0:spawing too fast
         /* index // this is the line index in the input text file */
         /* pid // the process id. you can use the pid result of wait to lookup in the hashtable */
         /* char *command; // command. This is good to store for when you decide to restart a command */
@@ -23,6 +24,7 @@ struct hash_table {
 };
 
 struct nlist* new_nlist(pid_t pid, char* command, int index);
+void set_start(struct nlist* to_add, struct timespec temp_start);
 void add_start(struct nlist* to_start);
 void add_stop(struct nlist* to_stop);
 double get_duration(struct nlist* node);
