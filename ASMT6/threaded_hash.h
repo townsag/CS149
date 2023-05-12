@@ -25,12 +25,13 @@ typedef struct __threaded_hash_table {
 node_t* new_node(char* name);
 void print_node(node_t* node);
 
+list_t* new_list();
 void print_list(list_t* list);
 void free_list_recursive(list_t* head);
-int list_insert(list_t* list, char* name);
+int insert_list(list_t* list, char* name);
 int search_List(list_t* list, char* name);
-int increment_node(list_t* list, char* name);
-int search_and_add_or_increment(list_t* list, char* name);
+int increment_name(list_t* list, char* name);
+//int search_and_add_or_increment(list_t* list, char* name);
 
 threaded_hash_table_t* new_threaded_hash_table();
 unsigned hash(char* name);

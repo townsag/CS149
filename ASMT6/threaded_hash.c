@@ -4,8 +4,8 @@
 #include "threaded_hash.h"
 #include <string.h>
 
-struct nlist* new_nlist(char* name){
-	struct nlist* temp = (struct nlist*)calloc(1, sizeof(struct nlist));
+node_t* new_node(char* name){
+	node_t* temp = (node_t*)calloc(1, sizeof(node_t));
 	if(temp == NULL){
 		printf("failed to allocate new nlist\n");
 		return NULL;
@@ -16,45 +16,113 @@ struct nlist* new_nlist(char* name){
 	return temp;
 }
 
-void print_node(struct nlist* node){
+void print_node(node_t* node){
 	printf("Name: %s, count: %d\n", node->name, node->count);
 }
 
-void print_nlist(struct nlist* head){
-	if(head != NULL){
-		print_node(head);
-		print_nlist(head->next);
+
+list_t* new_list(){
+	list_t* temp = (list*)malloc(sizeof(list*));
+	if(temp == NULL){
+		printf("failed to allocate new list\n");
+		return NULL;
 	}
+	temp->head = NULL;
+	pthread_mutex_init(&temp-list_lock, NULL);
 }
 
-void free_nlist(struct nlist* to_free){
-	free(to_free->name);
+void print_list(list_t* list){
+	pthread_mutex_lock(&list->list_lock);
+
+	node_t* temp = list->head;
+	while(temp != NULL){
+		print_node(temp);
+		temp = temp->next;
+	}
+
+	pthread_mutex_unlock(&list->list_lock);
+}
+
+void free_list_recursive(list_t* to_free){
+	node_t temp = to_free->head;
+	node_t look_ahead;
+	while(temp != NULL){
+		look_ahead = temp->next;
+		free(temp->name);
+		free(temp);
+		temp = look_ahead;
+	}
 	free(to_free);
 }
 
-void free_nlist_recursive(struct nlist* to_free){
-	free(to_free->name);
-	if(to_free->next != NULL){
-		free_nlist_recursive(to_free->next);
+
+int insert_list(list_t* list, char* name){
+	node_t* temp = (node_t*)malloc(sizeof(node_t));
+	if(temp == NULL){
+		print("failed to allocate new node for: %s\n", name);
+		return -1;
 	}
-	free(to_free);
+	temp->name = name;
+	temp->count = 1;
+	
+	pthread_mutex_lock(&list->list_lock);
+	temp->next = list->head;
+	list->head = temp;
+	pthread_mutex_unlock(&list->list_lock);
+	return 1;
 }
 
-struct threaded_hash_table* new_threaded_hash_table(){
-	struct threaded_hash_table* temp = (struct threaded_hash_table*) calloc(1, sizeof(struct threaded_hash_table));
+int search_list(list_t* list, char* name){
+	int count = 0;
+	pthread_mutex_lock(&list->list_lock);
+	node_t* temp = list->head;
+	while(temp != NULL){
+		if(strcmp(temp->name, name) == 0){
+			count = temp->count;
+			break;
+		}
+		temp = temp->next;
+	}
+	pthread_mutex_unlock(&list->list_lock);
+	return count;
+}
+
+int increment_name(list_t* list, char* name){
+	node_t* temp = list->head;
+	while(temp != NULL){
+		if(strcmp(temp->name, name) == 0){
+			pthread_mutex_lock(&list->list_lock);
+			temp-count += 1;
+			pthread_mutex_unlock(&list->list_lock);
+			return 1;
+		}
+		temp = temp->next;
+	}
+	return -1;
+}
+			
+threaded_hash_table_t* new_threaded_hash_table(){
+	threaded_hash_table_t* temp = (threaded_hash_table_t*) calloc(1, sizeof(threaded_hash_table));
 	if(temp == NULL){
 		printf("failed to allocate hash table struct\n");
 		return NULL;
 	}
 	
-	temp->table = (struct nlist**)calloc(HASH_SIZE, sizeof(struct nlist*));
+	temp->table = (struct list_t**)calloc(HASH_SIZE, sizeof(struct nlist*));
 	if(temp->table == NULL){
 		printf("failed to allocate hash table table\n");
 		free(temp);
 		return NULL;
 	}
 	for(int i = 0; i < HASH_SIZE; i++){
-		temp->table[i] = NULL;
+		temp->table[i] = new_list();
+		if(temp->table[i] == NULL){
+			printf("failed to allocate bucket number: %d\n", i);
+			for(int j = 0; j < i; j++){
+				free_list_recursive(temp->table[j]);
+			}
+			return NULL;
+		}
 	}
 	return temp;
 }
@@ -71,70 +139,33 @@ unsigned hash(char* name){
 
 /* lookup: look for name in hashtab */
 /* This is traversing the linked list under a slot of the hash
-table. The array position to look in is returned by the hash
-function */
-struct nlist *lookup(struct threaded_hash_table* table_obj, char* name){
-	struct nlist *np;
-	for (np = table_obj->table[hash(name)]; np != NULL; np = np->next){
-		if (strcmp(name, np->name) == 0)
-		return np; /* found */
+table. The count of that name is returned or zero */
+int lookup_name(threaded_hash_table_t* table_obj, char* name){
+	return search_list(table_obj->table[hash(name)], name);
+}
+
+int add_name(threaded_hash_table* table_obj, char* name){
+	int index = hash(name);
+	int result;
+	if ((result = increment_name(table_obj->table[index], name)) == -1){
+		result = insert_list(table_obj->table[index], name);
 	}
-	return NULL; /* not found */
+	return result;
 }
 
-
-/* insert: put (name, count) in hashtab */
-/* This insert returns a nlist node. Thus when you call insert in your main function */
-/* you will save the returned nlist node in a variable (mynode).*/
-/* Then you can set the starttime and finishtime from your main function: */
-/* mynode->starttime = starttime; mynode->finishtime = finishtime; */
-struct nlist *insert(struct threaded_hash_table* table_obj, char* name, int count){
-	struct nlist *np;
-	unsigned hashval;
-	//There are 2 cases:
-	if ((np = lookup(table_obj, name)) == NULL) { 
-		/* case 1: the pid is not found, so you have to create it with malloc.
-		 * Then you want to set the pid, command and index */
-		//np = (struct nlist *) malloc(sizeof(*np));
-		np = new_nlist(name);
-		if (np == NULL){
-			free(name);
-			return NULL;
-		}
-		
-		np->count = 1;
-		hashval = hash(name);
-		np->next = table_obj->table[hashval];
-		table_obj->table[hashval] = np;
-	} else {
-		//inset on the same name means what?? probably better to just increment the existing name
-		np->count += 1;
-	}  
-	return np;
-}
-
-void print_hash_table(struct threaded_hash_table* hash_obj){
+void print_hash_table(threaded_hash_table_t* hash_obj){
 	for(int i = 0; i < HASH_SIZE; i++){
 		printf("nodes at bucket %d:\n", i);
-		print_nlist(hash_obj->table[i]);
+		print_list(hash_obj->table[i]);
 	}
 }
 
-void free_hash_table(struct thraeded_hash_table* table_obj){
+void free_hash_table(threaded_hash_table_t* table_obj){
 	for(int i = 0; i < HASH_SIZE; i++){
-		if(table_obj->table[i] != NULL){
-			free_nlist_recursive(table_obj->table[i]);
-		}
+		free_list_recursive(table_obj->table[i]);
 	}
 	free(table_obj->table);
 	free(table_obj);
 }
-
-int get_count(struct threaded_hash_table* table_obj, char* name){
-
-
-
-
-
 
 
