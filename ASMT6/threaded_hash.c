@@ -151,9 +151,11 @@ int lookup_name(threaded_hash_table_t* table_obj, char* name){
 
 int add_name(threaded_hash_table_t* table_obj, char* name){
 	int index = hash(name);
-	int result;
-	if ((result = increment_name(table_obj->table[index], name)) == -1){
+	int result = increment_name(table_obj->table[index], name);
+	if (result  == -1){
 		result = insert_list(table_obj->table[index], name);
+	} else {
+		free(name);
 	}
 	return result;
 }
