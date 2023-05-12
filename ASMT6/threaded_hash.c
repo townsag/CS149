@@ -23,7 +23,7 @@ void print_node(node_t* node){
 
 
 list_t* new_list(){
-	list_t* temp = (list_t*)malloc(sizeof(list_t*));
+	list_t* temp = (list_t*)malloc(sizeof(list_t));
 	if(temp == NULL){
 		printf("failed to allocate new list\n");
 		return NULL;
@@ -107,12 +107,14 @@ threaded_hash_table_t* new_threaded_hash_table(){
 	threaded_hash_table_t* temp = (threaded_hash_table_t*) calloc(1, sizeof(threaded_hash_table_t));
 	if(temp == NULL){
 		printf("failed to allocate hash table struct\n");
+		fflush(stdout);
 		return NULL;
 	}
 	
 	temp->table = (list_t**)calloc(HASH_SIZE, sizeof(struct list_t*));
 	if(temp->table == NULL){
 		printf("failed to allocate hash table table\n");
+		fflush(stdout);
 		free(temp);
 		return NULL;
 	}
@@ -120,6 +122,7 @@ threaded_hash_table_t* new_threaded_hash_table(){
 		temp->table[i] = new_list();
 		if(temp->table[i] == NULL){
 			printf("failed to allocate bucket number: %d\n", i);
+			fflush(stdout);
 			for(int j = 0; j < i; j++){
 				free_list_recursive(temp->table[j]);
 			}

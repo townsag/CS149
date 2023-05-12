@@ -28,7 +28,9 @@ void* mythread(void* arg){
 int main(void){
 	//int rc;
 	hash_obj = new_threaded_hash_table();
-	
+	printf("initialized the hash table\n");
+	fflush(stdout);
+
 	pthread_t p1;
 	pthread_t p2;
 
@@ -39,6 +41,9 @@ int main(void){
 	myarg_t args2;
 	args1.n = 1000;
 	args2.n = 2000;
+
+	printf("about to create both threads\n");
+	fflush(stdout);
 
 	pthread_create(&p1, NULL, mythread, &args1);
 	pthread_create(&p2, NULL, mythread, &args2);

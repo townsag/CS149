@@ -1,7 +1,7 @@
 #ifndef THREADED_HASH_H
 #define THREADED_HASH_H
 
-#include <time.h>
+#include <pthread.h>
 
 #define HASH_SIZE 10
 
