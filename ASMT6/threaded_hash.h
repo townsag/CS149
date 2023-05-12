@@ -3,32 +3,40 @@
 
 #include <time.h>
 
-#define HASH_SIZE 101
+#define HASH_SIZE 10
 
-struct nlist {
+typedef struct __node_t {
         /* table entry: */
-        struct nlist *next; /* next entry in chain */
+        struct __node_t *next; /* next entry in chain */
         char* name;
 	int count;
-};
+} node_t;
 
-struct threaded_hash_table {
-	struct nlist** table;
-};
+typedef struct __list_t {
+	node_t* head;
+	pthread_mutex_t list_lock;
+} list_t;
 
-struct nlist* new_nlist(char* name);
-void print_node(struct nlist* node);
-void print_nlist(struct nlist* head);
-void free_nlist(struct nlist* to_free);
-void free_nlist_recursive(struct nlist* head);
+typedef struct __threaded_hash_table {
+	list_t** table;
+} threaded_hash_table_t;
 
-struct threaded_hash_table* new_threaded_hash_table();
+
+node_t* new_node(char* name);
+void print_node(node_t* node);
+
+void print_list(list_t* list);
+void free_list_recursive(list_t* head);
+int list_insert(list_t* list, char* name);
+int search_List(list_t* list, char* name);
+int increment_node(list_t* list, char* name);
+int search_and_add_or_increment(list_t* list, char* name);
+
+threaded_hash_table_t* new_threaded_hash_table();
 unsigned hash(char* name);
-struct nlist* lookup(struct threaded_hash_table* table_obj, char* name);
-struct nlist* insert(struct threaded_hash_table* table_obj, char* name);
-void print_hash_table(struct threaded_hash_table* table_obj);
-void free_hash_table(struct threaded_hash_table* to_free);
-
-int get_count(struct theaded_hash_table* table_obj, char* name);
+int lookup_name(threaded_hash_table_t* table_obj, char* name);
+int add_name(threaded_hash_table_t* table_obj, char* name);
+void print_hash_table(threaded_hash_table_t* table_obj);
+void free_hash_table(threaded_hash_table_t* to_free);
 
 #endif

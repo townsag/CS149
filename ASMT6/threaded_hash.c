@@ -130,3 +130,11 @@ void free_hash_table(struct thraeded_hash_table* table_obj){
 	free(table_obj);
 }
 
+int get_count(struct threaded_hash_table* table_obj, char* name){
+
+
+
+
+
+
+
