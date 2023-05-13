@@ -80,6 +80,7 @@ struct NAME_NODE
 THREAD_NAME name_count;
 struct NAME_NODE *next;
 };*/
+threaded_hash_table_t* hash_obj;
 
 
 /*********************************************************
@@ -89,21 +90,23 @@ int main(int argc, char* argv[]){
 	// TODO similar interface as A2: give as command-line arguments three filenames of 
 	// numbers (the numbers in the files are newline-separated).
 	
-	if(argc < 3){ printf("too few arguments were entered\nplease enter two files to be counted\n");}
-	if(argc > 3){ printf("too many arguments were entered\nplease enter two files to be counted\n");}
+	if(argc < 3){ printf("too few arguments were entered\nplease enter two files to be counted\n"); exit(1);}
+	if(argc > 3){ printf("too many arguments were entered\nplease enter two files to be counted\n"); exit(3);}
+
+	hash_obj = new_threaded_hash_table();
 
 	myarg_t arg1;
 	arg1.file_name = argv[1];
 
-	printf("create first thread");
+	printf("create first thread\n");
 	pthread_create(&tid1,NULL,thread_runner,&arg1);
 	/*
 	printf("create second thread");
 	pthread_create(&tid2,NULL,thread_runner,NULL);
 	*/
-	printf("wait for first thread to exit");
+	printf("wait for first thread to exit\n");
 	pthread_join(tid1,NULL);
-	printf("first thread exited");
+	printf("first thread exited\n");
 	
 	/*
 	printf("wait for second thread to exit");
@@ -112,6 +115,7 @@ int main(int argc, char* argv[]){
 	//TODO print out the sum variable with the sum of all the numbers
 	*/
 	print_hash_table(hash_obj);
+	free_hash_table(hash_obj);
 	exit(0);
 }//end main
 
@@ -122,9 +126,10 @@ int main(int argc, char* argv[]){
 void* thread_runner(void* x){
 	pthread_t me;
 
-	
+	myarg_t* args = (myarg_t*)x;
+
 	me = pthread_self();
-	printf("This is thread %ld (p=%p)",me,p);
+	printf("This is thread %ld (p=%p)\n",me,p);
 
 	pthread_mutex_lock(&tlock2); // critical section starts
 	if (p==NULL) {
@@ -134,9 +139,9 @@ void* thread_runner(void* x){
 	pthread_mutex_unlock(&tlock2); // critical section ends
 
 	if (p!=NULL && p->creator==me) {
-		printf("This is thread %ld and I created THREADDATA %p",me,p);
+		printf("This is thread %ld and I created THREADDATA %p\n",me,p);
 	} else {
-		printf("This is thread %ld and I can access the THREADDATA %p",me,p);
+		printf("This is thread %ld and I can access the THREADDATA %p\n",me,p);
 	}
 	
 	/**
@@ -149,7 +154,7 @@ void* thread_runner(void* x){
 	* //Make sure to use any mutex locks appropriately
 	*/
 
-	FILE* my_file  = fopen(file_name, "r");
+	FILE* my_file  = fopen(args->file_name, "r");
 
         if(my_file == NULL){
                 fprintf(stderr, "range: cannot open file\n");
@@ -159,29 +164,30 @@ void* thread_runner(void* x){
 	size_t bufsize = 0;
 	ssize_t nread;
 	
-	while ((nread = getline(&line, &bufsize, fp)) != -1) {
-		add_name(hash_obj, line);
+	while ((nread = getline(&line, &bufsize, my_file)) != -1) {
+		//add_name(hash_obj, line);
+		printf("read the line: %s\n", line);
 	}
 
-    	fclose(fp);
+    	fclose(my_file);
 
 	// critical section starts
 	pthread_mutex_lock(&tlock2);
 	if (p!=NULL && p->creator==me) {
-		printf("This is thread %ld and I delete THREADDATA",me);
+		printf("This is thread %ld and I delete THREADDATA\n",me);
 		/**
 		* TODO Free the THREADATA object.
 		* Freeing should be done by the same thread that created it.
 		* See how the THREADDATA was created for an example of how this is done.
 		*/
-		free(p)
+		free(p);
 	} else {
-		printf("This is thread %ld and I can access the THREADDATA",me);
+		printf("This is thread %ld and I can access the THREADDATA\n",me);
 	}
-	pthread_mutex_lock(&tlock2);
+	pthread_mutex_unlock(&tlock2);
 	// TODO critical section ends
 	
 	pthread_exit(NULL);
-	return NULL;
+	//return NULL;
 }
 //end thread_runner
