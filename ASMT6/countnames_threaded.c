@@ -23,6 +23,9 @@ pthread_mutex_t tlock1 = PTHREAD_MUTEX_INITIALIZER;
 //TODO you need to use this mutexlock for mutual exclusion
 pthread_mutex_t tlock2 = PTHREAD_MUTEX_INITIALIZER;
 
+//used to make sure that both threads have finished executing
+pthread_cond_t done_cond = PTHREAD_COND_INITIALIZER;
+int done = 0;
 
 //thread mutex lock for access to the name counts data structure
 //TODO you need to use this mutexlock for mutual exclusion
@@ -97,23 +100,27 @@ int main(int argc, char* argv[]){
 
 	myarg_t arg1;
 	arg1.file_name = argv[1];
+	printf("file one is called <%s>\n", argv[1]);
+	myarg_t arg2;
+	arg2.file_name = argv[2];
+	printf("file two is called <%s>\n", argv[2]);
+	fflush(stdout);
 
 	printf("create first thread\n");
 	pthread_create(&tid1,NULL,thread_runner,&arg1);
-	/*
-	printf("create second thread");
-	pthread_create(&tid2,NULL,thread_runner,NULL);
-	*/
+	
+	printf("create second thread\n");
+	pthread_create(&tid2,NULL,thread_runner,&arg2);
+	
 	printf("wait for first thread to exit\n");
 	pthread_join(tid1,NULL);
-	printf("first thread exited\n");
+	printf("first thread exited\n");	
 	
-	/*
-	printf("wait for second thread to exit");
+	printf("wait for second thread to exit\n");
 	pthread_join(tid2,NULL);
-	printf("second thread exited");
+	printf("second thread exited\n");
 	//TODO print out the sum variable with the sum of all the numbers
-	*/
+	
 	print_hash_table(hash_obj);
 	free_hash_table(hash_obj);
 	exit(0);
@@ -154,10 +161,10 @@ void* thread_runner(void* x){
 	* //Make sure to use any mutex locks appropriately
 	*/
 
-	FILE* my_file  = fopen(args->file_name, "r");
+	FILE* my_file = fopen(args->file_name, "r");
 
         if(my_file == NULL){
-                fprintf(stderr, "range: cannot open file\n");
+                fprintf(stderr, "cannot open file %s\n", args->file_name);
 		exit(1);
 	}
 	char *line = NULL;
@@ -165,9 +172,15 @@ void* thread_runner(void* x){
 	ssize_t nread;
 	
 	while ((nread = getline(&line, &bufsize, my_file)) != -1) {
-		//add_name(hash_obj, line);
+		if(line[strlen(line) - 1] == '\n'){
+			line[strlen(line) - 1] = '\0';
+		}	
+		char* temp = strdup(line);
+		add_name(hash_obj, temp);
+		//free(temp);
 		printf("read the line: %s\n", line);
 	}
+	free(line);
 
     	fclose(my_file);
 
@@ -180,8 +193,13 @@ void* thread_runner(void* x){
 		* Freeing should be done by the same thread that created it.
 		* See how the THREADDATA was created for an example of how this is done.
 		*/
+		while(done == 0){
+			pthread_cond_wait(&done_cond, &tlock2);
+		}
 		free(p);
 	} else {
+		done = 1;
+		pthread_cond_signal(&done_cond);
 		printf("This is thread %ld and I can access the THREADDATA\n",me);
 	}
 	pthread_mutex_unlock(&tlock2);
