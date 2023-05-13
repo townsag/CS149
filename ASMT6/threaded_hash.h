@@ -38,6 +38,7 @@ unsigned hash(char* name);
 int lookup_name(threaded_hash_table_t* table_obj, char* name);
 int add_name(threaded_hash_table_t* table_obj, char* name);
 void print_hash_table(threaded_hash_table_t* table_obj);
+void pretty_print(threaded_hash_table_t* table_obj);
 void free_hash_table(threaded_hash_table_t* to_free);
 
 #endif

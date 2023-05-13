@@ -29,8 +29,8 @@ int done = 0;
 
 //thread mutex lock for access to the name counts data structure
 //TODO you need to use this mutexlock for mutual exclusion
-pthread_mutex_t tlock3 = PTHREAD_MUTEX_INITIALIZER;
-
+//pthread_mutex_t tlock3 = PTHREAD_MUTEX_INITIALIZER;
+//encapsulated in hash ^^
 
 void* thread_runner(void*);
 pthread_t tid1, tid2;
@@ -48,7 +48,7 @@ THREADDATA* p=NULL;
 
 
 //variable for indexing of messages by the logging function.
-int logindex=0;
+int logindex=1;
 int *logip = &logindex;
 
 typedef struct __myarg_t{
@@ -60,29 +60,7 @@ typedef struct __myret_t{
 } myret_t;
 
 
-/*
-//The name counts.
-// You can use any data structure you like, here are 2 proposals: a linked list OR an array (up to 100 names).
-// The linked list will be faster since you only need to lock one node, while for 
-// the array you need to lock the whole array.
-// You can use a linked list template from A5. You should also consider using a hash 
-// table, like in A5 (even faster).
-struct NAME_STRUCT
-{
-char name[30];
-int count;
-};
-typedef struct NAME_STRUCT THREAD_NAME;
-
-//array of 100 names
-THREAD_NAME names_counts[100];
-
-//node with name_info for a linked list
-struct NAME_NODE
-{
-THREAD_NAME name_count;
-struct NAME_NODE *next;
-};*/
+//for holding name counts
 threaded_hash_table_t* hash_obj;
 
 
@@ -100,10 +78,10 @@ int main(int argc, char* argv[]){
 
 	myarg_t arg1;
 	arg1.file_name = argv[1];
-	printf("file one is called <%s>\n", argv[1]);
+	//printf("file one is called <%s>\n", argv[1]);
 	myarg_t arg2;
 	arg2.file_name = argv[2];
-	printf("file two is called <%s>\n", argv[2]);
+	//printf("file two is called <%s>\n", argv[2]);
 	fflush(stdout);
 
 	printf("create first thread\n");
@@ -121,7 +99,9 @@ int main(int argc, char* argv[]){
 	printf("second thread exited\n");
 	//TODO print out the sum variable with the sum of all the numbers
 	
-	print_hash_table(hash_obj);
+	//print_hash_table(hash_obj);
+	printf("\n\n==========counts==========\n");
+	pretty_print(hash_obj);
 	free_hash_table(hash_obj);
 	exit(0);
 }//end main
@@ -136,7 +116,7 @@ void* thread_runner(void* x){
 	myarg_t* args = (myarg_t*)x;
 
 	me = pthread_self();
-	printf("This is thread %ld (p=%p)\n",me,p);
+	//printf("This is thread %ld (p=%p)\n",me,p);
 
 	pthread_mutex_lock(&tlock2); // critical section starts
 	if (p==NULL) {
@@ -145,21 +125,14 @@ void* thread_runner(void* x){
 	}
 	pthread_mutex_unlock(&tlock2); // critical section ends
 
+	pthread_mutex_lock(&tlock1);
 	if (p!=NULL && p->creator==me) {
-		printf("This is thread %ld and I created THREADDATA %p\n",me,p);
+		printf("log index %d: This is thread %ld and I created THREADDATA %p\n", logindex++, me, p);
 	} else {
-		printf("This is thread %ld and I can access the THREADDATA %p\n",me,p);
+		printf("log index %d: This is thread %ld and I can access the THREADDATA %p\n",logindex++,me,p);
 	}
+	pthread_mutex_unlock(&tlock1);
 	
-	/**
-	* //TODO implement any thread name counting functionality you need.
-	* Assign one file per thread. Hint: you can either pass each argv filename as a
-	thread_runner argument from main.
-	* Or use the logindex to index argv, since every thread will increment the
-	logindex anyway
-	* when it opens a file to print a log message (e.g. logindex could also index argv)....
-	* //Make sure to use any mutex locks appropriately
-	*/
 
 	FILE* my_file = fopen(args->file_name, "r");
 
@@ -167,18 +140,29 @@ void* thread_runner(void* x){
                 fprintf(stderr, "cannot open file %s\n", args->file_name);
 		exit(1);
 	}
+
+	pthread_mutex_lock(&tlock1);
+	printf("log index %d: this is thread %ld and I opened the file %s\n", logindex++, me, args->file_name);
+	pthread_mutex_unlock(&tlock1);
+
 	char *line = NULL;
 	size_t bufsize = 0;
 	ssize_t nread;
+	int count = 0;
 	
 	while ((nread = getline(&line, &bufsize, my_file)) != -1) {
+		count++;
 		if(line[strlen(line) - 1] == '\n'){
 			line[strlen(line) - 1] = '\0';
-		}	
-		char* temp = strdup(line);
-		add_name(hash_obj, temp);
-		//free(temp);
-		printf("read the line: %s\n", line);
+		}
+		if(strcmp(line, "\n") == 0 || strcmp(line, " \n") == 0 || strcmp(line, "") == 0){
+                        fprintf(stderr, "Warning - file %s line %d is empty.\n", args->file_name, count);
+                } else {
+			char* temp = strdup(line);
+			add_name(hash_obj, temp);
+			//free(temp);
+			//printf("read the line: %s\n", line);
+		}
 	}
 	free(line);
 
@@ -187,12 +171,10 @@ void* thread_runner(void* x){
 	// critical section starts
 	pthread_mutex_lock(&tlock2);
 	if (p!=NULL && p->creator==me) {
-		printf("This is thread %ld and I delete THREADDATA\n",me);
-		/**
-		* TODO Free the THREADATA object.
-		* Freeing should be done by the same thread that created it.
-		* See how the THREADDATA was created for an example of how this is done.
-		*/
+		pthread_mutex_lock(&tlock1);
+		printf("log index %d: This is thread %ld and I delete THREADDATA\n", logindex++, me);
+		pthread_mutex_unlock(&tlock1);
+		
 		while(done == 0){
 			pthread_cond_wait(&done_cond, &tlock2);
 		}
@@ -200,10 +182,12 @@ void* thread_runner(void* x){
 	} else {
 		done = 1;
 		pthread_cond_signal(&done_cond);
-		printf("This is thread %ld and I can access the THREADDATA\n",me);
+		pthread_mutex_lock(&tlock1);
+		printf("log index %d: This is thread %ld and I can access the THREADDATA\n", logindex++, me);
+		pthread_mutex_unlock(&tlock1);
 	}
 	pthread_mutex_unlock(&tlock2);
-	// TODO critical section ends
+	//critical section ends
 	
 	pthread_exit(NULL);
 	//return NULL;

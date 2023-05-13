@@ -167,6 +167,12 @@ void print_hash_table(threaded_hash_table_t* hash_obj){
 	}
 }
 
+void pretty_print(threaded_hash_table_t* hash_obj){
+	for(int i = 0; i < HASH_SIZE; i++){
+		print_list(hash_obj->table[i]);
+	}
+}
+
 void free_hash_table(threaded_hash_table_t* table_obj){
 	for(int i = 0; i < HASH_SIZE; i++){
 		free_list_recursive(table_obj->table[i]);
